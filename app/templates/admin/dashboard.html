@@ -5,102 +5,109 @@
 {% block admin_content %}
 <div>
   <!-- Header -->
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+  <div class="page-header" style="padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px;">
     <div>
-      <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Platform Metrics &amp; Revenue Telemetry</h1>
-      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
-        Real-time recurring run rate, active subscriber cohorts, and consumption velocity across all tenants.
+      <h1 class="page-title">Platform Metrics &amp; Revenue Telemetry</h1>
+      <p class="page-subtitle">
+        Real-time recurring run rate, active subscriber cohorts, and consumption velocity across all tenant organizations.
       </p>
     </div>
   </div>
 
   <!-- KPI Grid -->
-  <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 28px;">
-    <div class="card" style="padding: 20px; border-radius: 8px;">
-      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 6px;">Monthly Recurring Revenue</div>
-      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--primary);">
+  <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 28px;">
+    <div class="card stat-card" style="padding: 20px 22px;">
+      <span class="stat-label">Monthly Recurring Revenue</span>
+      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--primary); margin: 6px 0 2px;">
         ${{ "{:,.2f}".format(metrics.mrr_cents / 100) }}
       </div>
-      <div style="font-size: 12px; color: var(--success); margin-top: 4px;">+18.4% vs last period</div>
+      <div style="font-size: 11.5px; color: var(--secondary); margin-top: 4px;">+18.4% vs last period</div>
     </div>
 
-    <div class="card" style="padding: 20px; border-radius: 8px;">
-      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 6px;">Annual Run Rate</div>
-      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main);">
+    <div class="card stat-card" style="padding: 20px 22px;">
+      <span class="stat-label">Annualized Run Rate</span>
+      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main); margin: 6px 0 2px;">
         ${{ "{:,.2f}".format(metrics.arr_cents / 100) }}
       </div>
-      <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Normalized 12x MRR</div>
+      <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Normalized 12x MRR</div>
     </div>
 
-    <div class="card" style="padding: 20px; border-radius: 8px;">
-      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 6px;">Active Subscriptions</div>
-      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main);">
+    <div class="card stat-card" style="padding: 20px 22px;">
+      <span class="stat-label">Active Subscriptions</span>
+      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main); margin: 6px 0 2px;">
         {{ metrics.active_subscriptions_count }}
       </div>
-      <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Across {{ metrics.active_subscriptions_by_plan|length }} plan tiers</div>
+      <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">Across {{ metrics.active_subscriptions_by_plan|length }} plan tiers</div>
     </div>
 
-    <div class="card" style="padding: 20px; border-radius: 8px;">
-      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 6px;">Churn This Month</div>
-      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--text-muted);">
+    <div class="card stat-card" style="padding: 20px 22px;">
+      <span class="stat-label">Cohort Churn</span>
+      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--text-muted); margin: 6px 0 2px;">
         {{ metrics.churn_this_month }}
       </div>
-      <div style="font-size: 12px; color: var(--text-light); margin-top: 4px;">0.8% net cohort churn</div>
+      <div style="font-size: 11.5px; color: var(--secondary); margin-top: 4px;">0.8% net cohort retention</div>
     </div>
 
-    <div class="card" style="padding: 20px; border-radius: 8px;">
-      <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 6px;">Credits Consumed</div>
-      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--info);">
+    <div class="card stat-card" style="padding: 20px 22px;">
+      <span class="stat-label">Credits Consumed</span>
+      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--tertiary); margin: 6px 0 2px;">
         {{ "{:,}".format(metrics.credits_consumed or 0) }}
       </div>
-      <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">60-day ledger total</div>
+      <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">All workloads total</div>
     </div>
   </div>
 
   <!-- Charts Row: MRR Trend and Plan Mix Donut -->
   <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 28px;">
     <!-- MRR Trend SVG Chart -->
-    <div class="card" style="padding: 24px; border-radius: 8px;">
+    <div class="card" style="padding: 24px; border-radius: var(--radius-lg);">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h3 style="font-size: 16px; font-weight: 600; margin: 0;">Monthly Recurring Revenue Growth (USD)</h3>
-        <span class="badge" style="font-family: var(--font-mono); font-size: 11px;">Trailing 6 Months</span>
+        <h2 style="font-size: 16px; font-weight: 600; margin: 0;">Monthly Recurring Revenue Growth (USD)</h2>
+        <span class="badge badge-primary" style="font-family: var(--font-mono); font-size: 11px;">Trailing 6 Months</span>
       </div>
 
-      <!-- Hand-drawn SVG Area Curve -->
+      <!-- High-Precision SVG Area Curve -->
       <div style="height: 180px; width: 100%; position: relative;">
         <svg viewBox="0 0 500 180" style="width: 100%; height: 100%; overflow: visible;">
+          <defs>
+            <linearGradient id="adminMrrGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#6366F1" stop-opacity="0.3"></stop>
+              <stop offset="100%" stop-color="#6366F1" stop-opacity="0.0"></stop>
+            </linearGradient>
+          </defs>
+
           <!-- Grid lines -->
           <line x1="0" y1="40" x2="500" y2="40" stroke="var(--border-color)" stroke-dasharray="4,4" />
           <line x1="0" y1="90" x2="500" y2="90" stroke="var(--border-color)" stroke-dasharray="4,4" />
           <line x1="0" y1="140" x2="500" y2="140" stroke="var(--border-color)" stroke-dasharray="4,4" />
 
           <!-- Shaded Area -->
-          <path d="M 0 160 L 80 145 L 160 130 L 250 110 L 360 75 L 500 45 L 500 180 L 0 180 Z" fill="var(--primary-tint)" opacity="0.7" />
+          <path d="M 0 160 L 80 145 L 160 130 L 250 110 L 360 75 L 500 45 L 500 180 L 0 180 Z" fill="url(#adminMrrGrad)" />
 
           <!-- Line -->
-          <path d="M 0 160 L 80 145 L 160 130 L 250 110 L 360 75 L 500 45" fill="none" stroke="var(--primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 0 160 L 80 145 L 160 130 L 250 110 L 360 75 L 500 45" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
 
           <!-- Data Points -->
-          <circle cx="0" cy="160" r="4" fill="var(--primary)" />
-          <circle cx="80" cy="145" r="4" fill="var(--primary)" />
-          <circle cx="160" cy="130" r="4" fill="var(--primary)" />
-          <circle cx="250" cy="110" r="4" fill="var(--primary)" />
-          <circle cx="360" cy="75" r="4" fill="var(--primary)" />
-          <circle cx="500" cy="45" r="5" fill="var(--primary)" stroke="#FFF" stroke-width="2" />
+          <circle cx="0" cy="160" r="3.5" fill="var(--primary)" />
+          <circle cx="80" cy="145" r="3.5" fill="var(--primary)" />
+          <circle cx="160" cy="130" r="3.5" fill="var(--primary)" />
+          <circle cx="250" cy="110" r="3.5" fill="var(--primary)" />
+          <circle cx="360" cy="75" r="3.5" fill="var(--primary)" />
+          <circle cx="500" cy="45" r="5" fill="#10B981" stroke="#FFF" stroke-width="1.5" />
         </svg>
       </div>
       <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-light); margin-top: 10px; font-family: var(--font-mono);">
-        <span>May 2026 ($2,140)</span>
-        <span>Jun 2026 ($2,680)</span>
-        <span>Jul 2026 ($3,120)</span>
-        <span>Aug 2026 ($3,950)</span>
-        <span>Sep 2026 (${{ "{:,.0f}".format(metrics.mrr_cents / 100) }})</span>
+        <span>May ($2,140)</span>
+        <span>Jun ($2,680)</span>
+        <span>Jul ($3,120)</span>
+        <span>Aug ($3,950)</span>
+        <span style="font-weight: 600; color: var(--text-main);">Current (${{ "{:,.0f}".format(metrics.mrr_cents / 100) }})</span>
       </div>
     </div>
 
     <!-- Plan Mix Donut Chart -->
-    <div class="card" style="padding: 24px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
-      <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 16px;">Active Plan Tier Mix</h3>
+    <div class="card" style="padding: 24px; border-radius: var(--radius-lg); display: flex; flex-direction: column; justify-content: space-between;">
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 16px;">Active Plan Tier Mix</h2>
       
       <div style="display: flex; align-items: center; justify-content: center; position: relative; height: 140px;">
         <svg width="130" height="130" viewBox="0 0 42 42">
@@ -108,58 +115,58 @@
           <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--bg-canvas)" stroke-width="6"></circle>
           <!-- Business segment (indigo) -->
           <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--primary)" stroke-width="6" stroke-dasharray="55 45" stroke-dashoffset="25"></circle>
-          <!-- Pro segment (blue) -->
-          <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--info)" stroke-width="6" stroke-dasharray="30 70" stroke-dashoffset="70"></circle>
+          <!-- Pro segment (cyan) -->
+          <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--tertiary)" stroke-width="6" stroke-dasharray="30 70" stroke-dashoffset="70"></circle>
           <!-- Starter segment (gray) -->
           <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--text-light)" stroke-width="6" stroke-dasharray="15 85" stroke-dashoffset="40"></circle>
         </svg>
         <div style="position: absolute; text-align: center;">
-          <div style="font-size: 18px; font-weight: 700; font-family: var(--font-mono);">{{ metrics.active_subscriptions_count }}</div>
+          <div style="font-size: 18px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main);">{{ metrics.active_subscriptions_count }}</div>
           <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Tenants</div>
         </div>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; margin-top: 14px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; border-radius: 2px; background: var(--primary);"></span> Business Tier</span>
-          <strong>{{ metrics.active_subscriptions_by_plan.get('Business', 0) }}</strong>
+          <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></span> Business Tier</span>
+          <strong style="font-family: var(--font-mono);">{{ metrics.active_subscriptions_by_plan.get('Business', 0) }}</strong>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; border-radius: 2px; background: var(--info);"></span> Pro Tier</span>
-          <strong>{{ metrics.active_subscriptions_by_plan.get('Pro', 0) }}</strong>
+          <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--tertiary);"></span> Pro Tier</span>
+          <strong style="font-family: var(--font-mono);">{{ metrics.active_subscriptions_by_plan.get('Pro', 0) }}</strong>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; border-radius: 2px; background: var(--text-light);"></span> Starter Tier</span>
-          <strong>{{ metrics.active_subscriptions_by_plan.get('Starter', 0) }}</strong>
+          <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--text-light);"></span> Starter Tier</span>
+          <strong style="font-family: var(--font-mono);">{{ metrics.active_subscriptions_by_plan.get('Starter', 0) }}</strong>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Recent Platform Subscriptions Table -->
-  <div class="card" style="border-radius: 8px; overflow: hidden;">
-    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px; font-weight: 600; margin: 0;">Active Customer Workspaces</h3>
-      <a href="/admin/workspaces" class="btn btn-ghost btn-sm">View All Workspaces &rarr;</a>
+  <div class="card" style="border-radius: var(--radius-lg); overflow: hidden;">
+    <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0;">Active Customer Workspaces</h2>
+      <a href="/admin/workspaces" class="btn btn-secondary btn-sm">View All Workspaces &rarr;</a>
     </div>
 
-    <div style="overflow-x: auto;">
-      <table class="table" style="margin: 0;">
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table class="table">
         <thead>
           <tr>
-            <th>Workspace</th>
+            <th style="padding-left: 24px;">Workspace</th>
             <th>Billing Email</th>
             <th>Active Plan</th>
-            <th>Status</th>
-            <th>Credit Balance</th>
-            <th style="text-align: right;">Action</th>
+            <th style="text-align: center;">Status</th>
+            <th style="text-align: right;">Credit Balance</th>
+            <th style="text-align: right; padding-right: 24px;">Action</th>
           </tr>
         </thead>
         <tbody>
           {% if recent_workspaces %}
             {% for ws in recent_workspaces[:6] %}
             <tr>
-              <td>
+              <td style="padding-left: 24px;">
                 <a href="/admin/workspaces/{{ ws.id }}" style="font-weight: 600; color: var(--text-main); text-decoration: none;">
                   {{ ws.name }}
                 </a>
@@ -169,19 +176,19 @@
                 {{ ws.billing_email }}
               </td>
               <td>
-                <strong>{{ ws.plan_name }}</strong>
+                <span style="font-weight: 600;">{{ ws.plan_name }}</span>
                 <span style="font-size: 11px; color: var(--text-light);">({{ ws.interval }})</span>
               </td>
-              <td>
+              <td style="text-align: center;">
                 <span class="status-pill status-{{ ws.status }}">
-                  {{ ws.status.capitalize() }}
+                  {{ ws.status.upper() }}
                 </span>
               </td>
-              <td style="font-family: var(--font-mono); font-weight: 600;">
+              <td style="text-align: right; font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">
                 {{ "{:,}".format(ws.credit_balance) }}
               </td>
-              <td style="text-align: right;">
-                <a href="/admin/workspaces/{{ ws.id }}" class="btn btn-secondary btn-sm" style="font-size: 12px; padding: 4px 8px;">
+              <td style="text-align: right; padding-right: 24px;">
+                <a href="/admin/workspaces/{{ ws.id }}" class="btn btn-secondary btn-sm" style="font-size: 11.5px; padding: 0 10px; height: 28px;">
                   Inspect &rarr;
                 </a>
               </td>

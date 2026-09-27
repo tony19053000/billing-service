@@ -3,32 +3,34 @@
 {% block title %}Developer Tools &amp; Test Clock — Tallyo{% endblock %}
 
 {% block portal_content %}
-<div style="max-width: 860px;">
+<div style="max-width: 920px;">
   <!-- Header -->
-  <div style="margin-bottom: 28px;">
-    <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Developer Tools &amp; Test Clock</h1>
-    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
-      API credentials, live entitlement tester, and deterministic billing simulation clocks.
-    </p>
+  <div class="page-header" style="padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 28px;">
+    <div>
+      <h1 class="page-title">Developer Tools &amp; Test Clock</h1>
+      <p class="page-subtitle">
+        API credentials, live entitlement gate checker, and deterministic billing simulation clocks.
+      </p>
+    </div>
   </div>
 
   <!-- API Credentials Card -->
-  <div class="card" style="padding: 28px; border-radius: 8px; margin-bottom: 32px;">
+  <div class="card" style="padding: 24px 28px; border-radius: var(--radius-lg); margin-bottom: 28px;">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
       <div>
-        <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 4px;">Active API Secret Token</h3>
+        <h2 style="font-size: 17px; font-weight: 600; margin: 0 0 4px;">Active API Secret Token</h2>
         <p style="font-size: 13px; color: var(--text-muted); margin: 0;">
           Authenticate programmatic requests by passing this token in the HTTP Authorization header.
         </p>
       </div>
-      <span class="badge" style="background: var(--primary-tint); color: var(--primary); font-weight: 600;">Production Key</span>
+      <span class="badge badge-primary" style="font-weight: 600;">Production Key</span>
     </div>
 
-    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 16px;">
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 14px;">
       <input
         type="password"
         id="api-token-input"
-        class="form-input"
+        class="form-control"
         style="font-family: var(--font-mono); font-size: 13px; flex: 1; background: var(--bg-canvas);"
         value="{{ token or 'tly_sess_sec_9948201a88b209d7' }}"
         readonly
@@ -38,18 +40,18 @@
     </div>
 
     <div style="font-size: 12px; color: var(--text-light); line-height: 1.5;">
-      Header syntax: <code style="font-family: var(--font-mono); background: var(--bg-canvas); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color);">Authorization: Bearer &lt;token&gt;</code>
+      Header syntax: <code style="font-family: var(--font-mono); background: var(--bg-canvas); padding: 2px 6px; border-radius: var(--radius-xs); border: 1px solid var(--border-color);">Authorization: Bearer &lt;token&gt;</code>
     </div>
   </div>
 
   <!-- Feature-Check Tester Card -->
-  <div class="card" style="padding: 28px; border-radius: 8px; margin-bottom: 32px;">
-    <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 4px;">Live Feature Entitlement Tester</h3>
+  <div class="card" style="padding: 24px 28px; border-radius: var(--radius-lg); margin-bottom: 28px;">
+    <h2 style="font-size: 17px; font-weight: 600; margin: 0 0 4px;">Live Feature Entitlement Gate Tester</h2>
     <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 20px;">
-      Test the entitlement checking endpoint your core product calls before gating features.
+      Test the entitlement checking endpoint your core SaaS product calls before gating features.
     </p>
 
-    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 18px; flex-wrap: wrap;">
       <select id="feature-tester-key" class="form-select" style="max-width: 240px; font-family: var(--font-mono); font-size: 13px;">
         <option value="api_access">api_access</option>
         <option value="webhooks">webhooks</option>
@@ -60,21 +62,21 @@
         <option value="advanced_analytics">advanced_analytics</option>
         <option value="data_export">data_export</option>
       </select>
-      <button type="button" class="btn btn-secondary" onclick="runFeatureCheck()">Check Feature Gate</button>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="runFeatureCheck()">Check Feature Gate</button>
     </div>
 
     <!-- Output Box -->
-    <div id="feature-tester-result" style="display: none; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: 6px; padding: 14px; font-family: var(--font-mono); font-size: 13px;">
+    <div id="feature-tester-result" style="display: none; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px 18px; font-family: var(--font-mono); font-size: 13px;">
       <!-- Populated via JS -->
     </div>
   </div>
 
   <!-- Test Clock Panel -->
-  <div class="card" id="clock" style="padding: 28px; border-radius: 8px; border: 1px solid var(--primary); box-shadow: var(--shadow-sm);">
+  <div class="card" id="clock" style="padding: 24px 28px; border-radius: var(--radius-lg); border: 1px solid var(--primary-border); box-shadow: var(--shadow-sm);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
       <div>
-        <div style="display: inline-flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-          <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Simulation Test Clock</h3>
+        <div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <h2 style="font-size: 17px; font-weight: 600; margin: 0;">Simulation Test Clock</h2>
           <span class="status-pill status-active" style="font-size: 10px;">Deterministic</span>
         </div>
         <p style="font-size: 13px; color: var(--text-muted); margin: 0;">
@@ -84,9 +86,9 @@
     </div>
 
     <!-- Clock Current Date Display -->
-    <div style="background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+    <div style="background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
       <div>
-        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 4px;">
+        <div style="font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 4px;">
           Current Simulated Timestamp
         </div>
         <div id="clock-current-time" style="font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--primary);">
@@ -111,7 +113,7 @@
     <div style="padding-top: 20px; border-top: 1px solid var(--border-color);">
       <label class="form-label" for="custom-clock-days">Advance Custom Number of Days (1 &ndash; 400)</label>
       <div style="display: flex; gap: 10px; max-width: 380px;">
-        <input type="number" id="custom-clock-days" class="form-input" min="1" max="400" value="1" />
+        <input type="number" id="custom-clock-days" class="form-control" min="1" max="400" value="1" />
         <button type="button" id="advance-clock-btn" class="btn btn-primary" onclick="advanceClockDays(null)">
           Advance Clock &rarr;
         </button>
@@ -120,7 +122,7 @@
 
     <!-- Simulation Results Area -->
     <div id="clock-results-area" style="display: none; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-      <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Simulation Execution Summary:</h4>
+      <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Simulation Execution Summary:</h3>
       <div id="clock-results-content" style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
         <!-- Injected via JavaScript -->
       </div>

@@ -5,10 +5,10 @@
 {% block admin_content %}
 <div>
   <!-- Header -->
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+  <div class="page-header" style="padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px;">
     <div>
-      <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Platform Subscriptions</h1>
-      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+      <h1 class="page-title">Platform Subscriptions</h1>
+      <p class="page-subtitle">
         Active recurring contracts, interval schedules, and renewal status across all customer workspaces.
       </p>
     </div>
@@ -23,25 +23,25 @@
   </div>
 
   <!-- Subscriptions Table -->
-  <div class="card" style="border-radius: 8px; overflow: hidden;">
-    <div style="overflow-x: auto;">
-      <table class="table" style="margin: 0;">
+  <div class="card" style="border-radius: var(--radius-lg); overflow: hidden;">
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table class="table">
         <thead>
           <tr>
-            <th>Subscription ID</th>
+            <th style="padding-left: 24px;">Subscription ID</th>
             <th>Workspace</th>
             <th>Plan Tier</th>
             <th>Interval</th>
-            <th>Status</th>
+            <th style="text-align: center;">Status</th>
             <th>Period Ends</th>
-            <th>Scheduled Cancel</th>
+            <th style="text-align: right; padding-right: 24px;">Scheduled Cancel</th>
           </tr>
         </thead>
         <tbody>
           {% if subscriptions and subscriptions|length > 0 %}
             {% for sub in subscriptions %}
             <tr>
-              <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
+              <td style="padding-left: 24px; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
                 {{ sub.id }}
               </td>
               <td>
@@ -49,21 +49,21 @@
                   {{ sub.workspace_name or sub.workspace_id }}
                 </a>
               </td>
-              <td><strong>{{ sub.plan_name or sub.plan_id }}</strong></td>
-              <td style="font-size: 13px; text-transform: capitalize;">{{ sub.interval }}</td>
-              <td>
+              <td><span style="font-weight: 600;">{{ sub.plan_name or sub.plan_id }}</span></td>
+              <td style="font-size: 12.5px; text-transform: capitalize; color: var(--text-muted);">{{ sub.interval }}</td>
+              <td style="text-align: center;">
                 <span class="status-pill status-{{ sub.status }}">
-                  {{ sub.status.capitalize() }}
+                  {{ sub.status.upper() }}
                 </span>
               </td>
               <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
                 {{ sub.current_period_end[:10] }}
               </td>
-              <td>
+              <td style="text-align: right; padding-right: 24px;">
                 {% if sub.cancel_at_period_end %}
-                  <span class="status-pill status-past_due" style="font-size: 11px;">Yes</span>
+                  <span class="status-pill status-past_due" style="font-size: 10px;">YES</span>
                 {% else %}
-                  <span style="color: var(--text-light); font-size: 13px;">No</span>
+                  <span style="color: var(--text-light); font-size: 12px;">No</span>
                 {% endif %}
               </td>
             </tr>

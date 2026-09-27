@@ -14,8 +14,8 @@
 
     <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
       <div>
-        <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">{{ workspace.name }}</h1>
-        <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-muted);">
+        <h1 class="page-title">{{ workspace.name }}</h1>
+        <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-muted); margin-top: 4px;">
           <span>Slug: <strong style="font-family: var(--font-mono); color: var(--text-main);">{{ workspace.slug }}</strong></span>
           <span>&middot;</span>
           <span>Created: <span style="font-family: var(--font-mono);">{{ workspace.created_at[:10] }}</span></span>
@@ -25,58 +25,58 @@
   </div>
 
   <!-- Cards Grid: Details, Subscription, Adjust Credits -->
-  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 28px;">
+  <div class="stats-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 28px;">
     
     <!-- Workspace Overview Card -->
-    <div class="card" style="padding: 20px; border-radius: 8px;">
-      <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin: 0 0 12px;">
+    <div class="card stat-card" style="padding: 22px 24px;">
+      <span class="stat-label" style="margin-bottom: 12px;">
         Tenant Profile
-      </h3>
-      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+      </span>
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
         <div>
-          <span style="color: var(--text-muted);">Billing Contact:</span>
-          <div style="font-family: var(--font-mono); font-weight: 500; margin-top: 2px;">{{ workspace.billing_email }}</div>
+          <span style="color: var(--text-muted); font-size: 11.5px; text-transform: uppercase;">Billing Contact:</span>
+          <div style="font-family: var(--font-mono); font-weight: 500; margin-top: 2px; color: var(--text-main);">{{ workspace.billing_email }}</div>
         </div>
         <div>
-          <span style="color: var(--text-muted);">Tax / VAT ID:</span>
-          <div style="font-family: var(--font-mono); margin-top: 2px;">{{ workspace.tax_id or "Unregistered" }}</div>
+          <span style="color: var(--text-muted); font-size: 11.5px; text-transform: uppercase;">Tax / VAT ID:</span>
+          <div style="font-family: var(--font-mono); margin-top: 2px; color: var(--text-main);">{{ workspace.tax_id or "Unregistered" }}</div>
         </div>
         <div>
-          <span style="color: var(--text-muted);">Jurisdiction:</span>
-          <div style="font-weight: 600; margin-top: 2px;">{{ workspace.country }}</div>
+          <span style="color: var(--text-muted); font-size: 11.5px; text-transform: uppercase;">Jurisdiction:</span>
+          <div style="font-weight: 600; margin-top: 2px; color: var(--text-main);">{{ workspace.country }}</div>
         </div>
       </div>
     </div>
 
     <!-- Active Subscription Card -->
-    <div class="card" style="padding: 20px; border-radius: 8px;">
+    <div class="card stat-card" style="padding: 22px 24px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin: 0;">
+        <span class="stat-label" style="margin: 0;">
           Subscription
-        </h3>
+        </span>
         <span class="status-pill status-{{ subscription.status if subscription else 'active' }}">
-          {{ subscription.status.capitalize() if subscription else "None" }}
+          {{ subscription.status.upper() if subscription else "NONE" }}
         </span>
       </div>
       {% if subscription %}
-      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
         <div>
-          <span style="color: var(--text-muted);">Plan Tier:</span>
-          <div style="font-weight: 700; font-size: 15px; margin-top: 2px;">
+          <span style="color: var(--text-muted); font-size: 11.5px; text-transform: uppercase;">Plan Tier:</span>
+          <div style="font-weight: 700; font-size: 15px; margin-top: 2px; color: var(--text-main);">
             {{ plan.name if plan else subscription.plan_id }} ({{ subscription.interval }})
           </div>
         </div>
         <div>
-          <span style="color: var(--text-muted);">Current Period End:</span>
-          <div style="font-family: var(--font-mono); margin-top: 2px;">{{ subscription.current_period_end[:10] }}</div>
+          <span style="color: var(--text-muted); font-size: 11.5px; text-transform: uppercase;">Current Period End:</span>
+          <div style="font-family: var(--font-mono); margin-top: 2px; color: var(--text-main);">{{ subscription.current_period_end[:10] }}</div>
         </div>
         <div>
-          <span style="color: var(--text-muted);">Cancellation Status:</span>
+          <span style="color: var(--text-muted); font-size: 11.5px; text-transform: uppercase;">Cancellation Status:</span>
           <div style="margin-top: 2px;">
             {% if subscription.cancel_at_period_end %}
-              <span class="status-pill status-past_due" style="font-size: 11px;">Pending Period End</span>
+              <span class="status-pill status-past_due" style="font-size: 10px;">PENDING PERIOD END</span>
             {% else %}
-              <span style="color: var(--text-light);">Auto-Renewing</span>
+              <span class="badge badge-success" style="font-size: 11px;">Auto-Renewing</span>
             {% endif %}
           </div>
         </div>
@@ -87,11 +87,11 @@
     </div>
 
     <!-- Credit Adjustment Form Card -->
-    <div class="card" style="padding: 20px; border-radius: 8px;">
-      <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin: 0 0 8px;">
+    <div class="card stat-card" style="padding: 22px 24px;">
+      <span class="stat-label" style="margin-bottom: 8px;">
         Credit Balance &amp; Adjust
-      </h3>
-      <div style="font-size: 24px; font-weight: 700; font-family: var(--font-mono); color: var(--primary); margin-bottom: 12px;">
+      </span>
+      <div style="font-size: 26px; font-weight: 700; font-family: var(--font-mono); color: var(--primary); margin-bottom: 14px;">
         {{ "{:,}".format(workspace.credit_balance) }} credits
       </div>
 
@@ -100,20 +100,20 @@
           <input
             type="number"
             id="adjust-delta"
-            class="form-input"
-            style="font-family: var(--font-mono); font-size: 12px; padding: 4px 8px; flex: 1;"
+            class="form-control"
+            style="font-family: var(--font-mono); font-size: 12px; height: 32px; flex: 1;"
             placeholder="+/- Delta (e.g. 500)"
             required
           />
-          <button type="submit" id="adjust-btn" class="btn btn-primary btn-sm" style="font-size: 12px;">
+          <button type="submit" id="adjust-btn" class="btn btn-primary btn-sm" style="font-size: 12px; height: 32px;">
             Apply
           </button>
         </div>
         <input
           type="text"
           id="adjust-reason"
-          class="form-input"
-          style="font-size: 12px; padding: 4px 8px;"
+          class="form-control"
+          style="font-size: 12px; height: 32px;"
           placeholder="Reason (e.g. courtesy_grant)"
           required
         />
@@ -122,14 +122,14 @@
   </div>
 
   <!-- Entitlements Row -->
-  <div class="card" style="padding: 20px; border-radius: 8px; margin-bottom: 28px;">
-    <h3 style="font-size: 14px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin: 0 0 12px;">
+  <div class="card" style="padding: 22px 24px; border-radius: var(--radius-lg); margin-bottom: 28px;">
+    <h2 style="font-size: 15px; font-weight: 600; margin: 0 0 12px;">
       Provisioned Workspace Entitlements
-    </h3>
+    </h2>
     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
       {% if entitlements and entitlements|length > 0 %}
         {% for ent in entitlements %}
-          <span class="badge" style="background: var(--bg-canvas); border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 12px; padding: 4px 10px;">
+          <span class="badge badge-primary" style="font-size: 12px; padding: 4px 10px;">
             &check; {{ ent }}
           </span>
         {% endfor %}
@@ -140,32 +140,32 @@
   </div>
 
   <!-- Credit Ledger Table -->
-  <div class="card" style="border-radius: 8px; overflow: hidden; margin-bottom: 28px;">
-    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color);">
-      <h3 style="font-size: 15px; font-weight: 700; margin: 0;">Tenant Credit Transaction Ledger</h3>
+  <div class="card" style="border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 28px;">
+    <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color);">
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0;">Tenant Credit Transaction Ledger</h2>
     </div>
-    <div style="overflow-x: auto;">
+    <div class="table-container" style="border: none; border-radius: 0;">
       <table class="table" style="margin: 0; font-size: 13px;">
         <thead>
           <tr>
-            <th>Entry ID</th>
-            <th>Delta</th>
+            <th style="padding-left: 24px;">Entry ID</th>
+            <th style="text-align: right;">Delta</th>
             <th>Reason</th>
             <th>Reference</th>
-            <th>Recorded At</th>
+            <th style="text-align: right; padding-right: 24px;">Recorded At (UTC)</th>
           </tr>
         </thead>
         <tbody>
           {% if ledger and ledger|length > 0 %}
             {% for r in ledger %}
             <tr>
-              <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">{{ r.id }}</td>
-              <td style="font-family: var(--font-mono); font-weight: 700; {% if r.delta > 0 %}color: var(--success);{% else %}color: var(--danger);{% endif %}">
+              <td style="padding-left: 24px; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">{{ r.id }}</td>
+              <td style="text-align: right; font-family: var(--font-mono); font-weight: 700; {% if r.delta > 0 %}color: var(--secondary);{% else %}color: var(--danger);{% endif %}">
                 {% if r.delta > 0 %}+{{ "{:,}".format(r.delta) }}{% else %}{{ "{:,}".format(r.delta) }}{% endif %}
               </td>
               <td><span class="badge" style="font-family: var(--font-mono); font-size: 11px;">{{ r.reason }}</span></td>
               <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-light);">{{ r.reference or "—" }}</td>
-              <td style="font-size: 12px; color: var(--text-muted);">{{ r.created_at[:19].replace('T', ' ') }}</td>
+              <td style="text-align: right; padding-right: 24px; font-size: 12px; font-family: var(--font-mono); color: var(--text-muted);">{{ r.created_at[:19].replace('T', ' ') }}</td>
             </tr>
             {% endfor %}
           {% else %}

@@ -5,64 +5,82 @@
 {% block portal_content %}
 <div>
   <!-- Header -->
-  <div style="margin-bottom: 24px;">
-    <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Invoices &amp; Receipts</h1>
-    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
-      Official billing statements, itemized tax invoices, and payment receipts.
-    </p>
+  <div class="page-header" style="padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px;">
+    <div>
+      <h1 class="page-title">Invoices &amp; Accounting Receipts</h1>
+      <p class="page-subtitle">
+        Official billing statements, itemized tax records, and automated payment receipts.
+      </p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="showToast('Exporting accounting ledger as CSV...', 'info')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>Export All (CSV)</span>
+      </button>
+    </div>
   </div>
 
   <!-- Invoices Card Table -->
-  <div class="card" style="border-radius: 8px; overflow: hidden;">
-    <div style="overflow-x: auto;">
-      <table class="table" style="margin: 0;">
+  <div class="card" style="border-radius: var(--radius-lg); overflow: hidden;">
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table class="table">
         <thead>
           <tr>
-            <th>Invoice Number</th>
+            <th style="padding-left: 24px;">Invoice Number</th>
             <th>Billing Period</th>
             <th>Date Issued</th>
-            <th>Amount (USD)</th>
-            <th>Status</th>
-            <th style="text-align: right;">Actions</th>
+            <th style="text-align: right;">Amount (USD)</th>
+            <th style="text-align: center;">Status</th>
+            <th style="text-align: right; padding-right: 24px;">Actions</th>
           </tr>
         </thead>
         <tbody>
           {% if invoices and invoices|length > 0 %}
             {% for inv in invoices %}
             <tr>
-              <td style="font-family: var(--font-mono); font-weight: 600; color: var(--primary);">
-                {{ inv.number }}
+              <td style="padding-left: 24px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                  <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">
+                    {{ inv.number }}
+                  </span>
+                </div>
               </td>
-              <td style="font-size: 13px; color: var(--text-muted);">
-                {{ inv.period_start[:10] }} to {{ inv.period_end[:10] }}
+              <td style="font-size: 12.5px; color: var(--text-muted);">
+                {{ inv.period_start[:10] }} &ndash; {{ inv.period_end[:10] }}
               </td>
-              <td style="font-size: 13px; color: var(--text-muted);">
+              <td style="font-size: 12.5px; font-family: var(--font-mono); color: var(--text-muted);">
                 {{ inv.created_at[:10] }}
               </td>
-              <td style="font-family: var(--font-mono); font-weight: 600;">
+              <td style="text-align: right; font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">
                 ${{ "%.2f"|format(inv.total_cents / 100) }}
               </td>
-              <td>
+              <td style="text-align: center;">
                 <span class="status-pill status-{{ inv.status }}">
-                  {{ inv.status.capitalize() }}
+                  {{ inv.status.upper() }}
                 </span>
               </td>
-              <td style="text-align: right; display: flex; justify-content: flex-end; gap: 8px;">
-                <button
-                  type="button"
-                  class="btn btn-secondary btn-sm"
-                  onclick="openInvoiceDetail('{{ inv.id }}')"
-                >
-                  View Lines
-                </button>
-                <a
-                  href="/api/v1/invoices/{{ inv.id }}/pdf"
-                  target="_blank"
-                  class="btn btn-ghost btn-sm"
-                  title="Open Printable PDF"
-                >
-                  Download PDF &darr;
-                </a>
+              <td style="text-align: right; padding-right: 24px;">
+                <div style="display: inline-flex; align-items: center; gap: 6px;">
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    style="height: 28px; padding: 0 8px; font-size: 11.5px;"
+                    onclick="openInvoiceDetail('{{ inv.id }}')"
+                  >
+                    View Lines
+                  </button>
+                  <a
+                    href="/api/v1/invoices/{{ inv.id }}/pdf"
+                    target="_blank"
+                    class="btn btn-ghost btn-sm"
+                    style="height: 28px; padding: 0 8px; font-size: 11.5px; gap: 4px;"
+                    title="Download Tax Receipt PDF"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>PDF</span>
+                  </a>
+                </div>
               </td>
             </tr>
             {% endfor %}
@@ -79,81 +97,83 @@
   </div>
 
   <!-- Invoice Detail Slide-Over Drawer -->
-  <div class="slideover-backdrop" id="invoice-slideover" onclick="if(event.target === this) closeInvoiceDetail();">
-    <div class="slideover-panel">
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
+  <div class="slideover-backdrop" id="invoice-slideover" onclick="if(event.target === this) closeInvoiceDetail();"></div>
+  <div class="slideover-panel" id="invoice-slideover-panel">
+    <div class="slideover-header">
+      <div>
+        <span style="font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em;">Invoice Breakdown</span>
+        <h3 id="drawer-inv-number" style="font-size: 18px; font-weight: 700; margin: 2px 0 0; font-family: var(--font-mono); color: var(--primary);">
+          TLY-...
+        </h3>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="closeInvoiceDetail()">&times;</button>
+    </div>
+
+    <div class="slideover-body">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; background: var(--bg-canvas); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
         <div>
-          <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em;">Invoice Details</span>
-          <h3 id="drawer-inv-number" style="font-size: 18px; font-weight: 700; margin: 2px 0 0; font-family: var(--font-mono); color: var(--primary);">
-            TLY-...
-          </h3>
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-light);">Status</div>
+          <div id="drawer-inv-status" style="margin-top: 6px;">—</div>
         </div>
-        <button type="button" class="btn btn-ghost btn-sm" onclick="closeInvoiceDetail()">&times;</button>
-      </div>
-
-      <div style="padding: 24px; flex: 1; overflow-y: auto;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; background: var(--bg-canvas); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
-          <div>
-            <div style="font-size: 11px; color: var(--text-muted);">Status</div>
-            <div id="drawer-inv-status" style="margin-top: 4px;">—</div>
-          </div>
-          <div>
-            <div style="font-size: 11px; color: var(--text-muted);">Issue Date</div>
-            <div id="drawer-inv-date" style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; margin-top: 4px;">—</div>
-          </div>
-          <div style="grid-column: span 2;">
-            <div style="font-size: 11px; color: var(--text-muted);">Billing Period</div>
-            <div id="drawer-inv-period" style="font-family: var(--font-mono); font-size: 12px; margin-top: 4px;">—</div>
-          </div>
+        <div>
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-light);">Issue Date</div>
+          <div id="drawer-inv-date" style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; margin-top: 6px; color: var(--text-main);">—</div>
         </div>
-
-        <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Itemized Charges</h4>
-        <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
-          <table class="table" style="margin: 0; font-size: 13px;">
-            <thead>
-              <tr>
-                <th>Description</th>
-                <th style="text-align: right;">Qty</th>
-                <th style="text-align: right;">Amount</th>
-              </tr>
-            </thead>
-            <tbody id="drawer-lines-tbody">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Financial Totals Box -->
-        <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--border-color);">
-          <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
-            <span>Subtotal:</span>
-            <span id="drawer-inv-subtotal" style="font-family: var(--font-mono); font-weight: 500;">$0.00</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
-            <span>Taxes &amp; VAT:</span>
-            <span id="drawer-inv-tax" style="font-family: var(--font-mono); font-weight: 500;">$0.00</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: var(--text-main); padding-top: 8px; border-top: 1px solid var(--border-color);">
-            <span>Total Billed:</span>
-            <span id="drawer-inv-total" style="font-family: var(--font-mono); color: var(--primary);">$0.00</span>
-          </div>
+        <div style="grid-column: span 2;">
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-light);">Billing Period</div>
+          <div id="drawer-inv-period" style="font-family: var(--font-mono); font-size: 12px; margin-top: 6px; color: var(--text-muted);">—</div>
         </div>
       </div>
 
-      <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--bg-surface);">
-        <button type="button" class="btn btn-secondary" onclick="closeInvoiceDetail()">Close</button>
-        <a id="drawer-pdf-link" href="#" target="_blank" class="btn btn-primary">Open Printable PDF</a>
+      <h4 style="font-family: var(--font-display); font-size: 14px; font-weight: 600; margin-bottom: 12px;">Itemized Charges</h4>
+      <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 24px;">
+        <table class="table" style="margin: 0; font-size: 13px;">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th style="text-align: right;">Qty</th>
+              <th style="text-align: right;">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="drawer-lines-tbody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
       </div>
+
+      <!-- Financial Totals Box -->
+      <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+          <span>Subtotal:</span>
+          <span id="drawer-inv-subtotal" style="font-family: var(--font-mono); font-weight: 500; color: var(--text-main);">$0.00</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+          <span>Taxes &amp; VAT:</span>
+          <span id="drawer-inv-tax" style="font-family: var(--font-mono); font-weight: 500; color: var(--text-main);">$0.00</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: var(--text-main); padding-top: 10px; border-top: 1px solid var(--border-color);">
+          <span>Total Settled:</span>
+          <span id="drawer-inv-total" style="font-family: var(--font-mono); color: var(--primary);">$0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--bg-subtle);">
+      <button type="button" class="btn btn-secondary" onclick="closeInvoiceDetail()">Close</button>
+      <a id="drawer-pdf-link" href="#" target="_blank" class="btn btn-primary">Open Printable PDF</a>
     </div>
   </div>
 </div>
 
 <script>
 async function openInvoiceDetail(invoiceId) {
-  const drawer = document.getElementById('invoice-slideover');
+  const backdrop = document.getElementById('invoice-slideover');
+  const panel = document.getElementById('invoice-slideover-panel');
   const tbody = document.getElementById('drawer-lines-tbody');
   tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:16px;">Loading item details...</td></tr>';
-  drawer.classList.add('open');
+  
+  backdrop.classList.add('open');
+  panel.classList.add('open');
 
   try {
     const res = await fetch('/api/v1/invoices/' + invoiceId);
@@ -176,7 +196,7 @@ async function openInvoiceDetail(invoiceId) {
         tr.innerHTML = `
           <td>${l.description}</td>
           <td style="text-align: right; font-family: var(--font-mono);">${l.quantity}</td>
-          <td style="text-align: right; font-family: var(--font-mono); font-weight: 600;">$${(l.amount_cents / 100).toFixed(2)}</td>
+          <td style="text-align: right; font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">$${(l.amount_cents / 100).toFixed(2)}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -189,7 +209,10 @@ async function openInvoiceDetail(invoiceId) {
 }
 
 function closeInvoiceDetail() {
-  document.getElementById('invoice-slideover').classList.remove('open');
+  const backdrop = document.getElementById('invoice-slideover');
+  const panel = document.getElementById('invoice-slideover-panel');
+  if (backdrop) backdrop.classList.remove('open');
+  if (panel) panel.classList.remove('open');
 }
 </script>
 {% endblock %}

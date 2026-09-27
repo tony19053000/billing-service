@@ -3,42 +3,44 @@
 {% block title %}Workspace Settings — Tallyo{% endblock %}
 
 {% block portal_content %}
-<div style="max-width: 800px;">
+<div style="max-width: 860px;">
   <!-- Header -->
-  <div style="margin-bottom: 28px;">
-    <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Workspace Settings</h1>
-    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
-      Manage business entity records, tax compliance identifiers, team members, and subscription lifecycle.
-    </p>
+  <div class="page-header" style="padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 28px;">
+    <div>
+      <h1 class="page-title">Workspace Settings</h1>
+      <p class="page-subtitle">
+        Manage corporate legal entity records, tax compliance identifiers, authorized team members, and subscription lifecycle.
+      </p>
+    </div>
   </div>
 
   <!-- General Organization Profile -->
-  <div class="card" style="padding: 28px; border-radius: 8px; margin-bottom: 32px;">
-    <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 4px;">Organization &amp; Tax Profile</h3>
+  <div class="card" style="padding: 24px 28px; border-radius: var(--radius-lg); margin-bottom: 28px;">
+    <h2 style="font-size: 17px; font-weight: 600; margin: 0 0 4px;">Organization &amp; Tax Compliance Profile</h2>
     <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 20px;">
-      Information displayed on legal invoice receipts and used for jurisdiction-specific tax calculations.
+      Official company details displayed on accounting invoice receipts and used for jurisdiction-specific tax assessments.
     </p>
 
     <form id="workspace-form" onsubmit="handleSaveWorkspace(event)">
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
         <div class="form-group" style="margin-bottom: 0;">
           <label class="form-label" for="ws-name">Workspace / Legal Entity Name</label>
-          <input type="text" id="ws-name" class="form-input" value="{{ workspace.name if workspace else '' }}" required />
+          <input type="text" id="ws-name" class="form-control" value="{{ workspace.name if workspace else '' }}" required />
         </div>
         <div class="form-group" style="margin-bottom: 0;">
           <label class="form-label" for="ws-slug">Workspace Identifier Slug</label>
-          <input type="text" id="ws-slug" class="form-input" value="{{ workspace.slug if workspace else '' }}" disabled style="font-family: var(--font-mono); background: var(--bg-canvas);" />
+          <input type="text" id="ws-slug" class="form-control" value="{{ workspace.slug if workspace else '' }}" disabled style="font-family: var(--font-mono); background: var(--bg-canvas);" />
         </div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
         <div class="form-group" style="margin-bottom: 0;">
           <label class="form-label" for="ws-email">Accounts Payable / Billing Email</label>
-          <input type="email" id="ws-email" class="form-input" value="{{ workspace.billing_email if workspace else '' }}" required />
+          <input type="email" id="ws-email" class="form-control" value="{{ workspace.billing_email if workspace else '' }}" required />
         </div>
         <div class="form-group" style="margin-bottom: 0;">
           <label class="form-label" for="ws-tax">Tax ID / VAT Registration Number</label>
-          <input type="text" id="ws-tax" class="form-input" style="font-family: var(--font-mono);" value="{{ workspace.tax_id or '' }}" placeholder="US-EIN-92-3841029" />
+          <input type="text" id="ws-tax" class="form-control" style="font-family: var(--font-mono);" value="{{ workspace.tax_id or '' }}" placeholder="US-EIN-92-3841029" />
         </div>
       </div>
 
@@ -61,40 +63,40 @@
   </div>
 
   <!-- Team Members Section -->
-  <div class="card" style="padding: 28px; border-radius: 8px; margin-bottom: 32px;">
+  <div class="card" style="padding: 24px 28px; border-radius: var(--radius-lg); margin-bottom: 28px;">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
       <div>
-        <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 4px;">Team Members</h3>
+        <h2 style="font-size: 17px; font-weight: 600; margin: 0 0 4px;">Team Members &amp; Roles</h2>
         <p style="font-size: 13px; color: var(--text-muted); margin: 0;">
-          Colleagues authorized to manage billing subscriptions, download invoices, and inspect telemetry.
+          Colleagues authorized to manage billing subscriptions, download accounting invoices, and inspect telemetry.
         </p>
       </div>
-      <span class="badge" style="font-weight: 600;">{{ plan.seats if (plan and plan.seats > 0) else "Unlimited" }} Seats Available</span>
+      <span class="badge badge-primary" style="font-weight: 600;">{{ plan.seats if (plan and plan.seats > 0) else "Unlimited" }} Seats Available</span>
     </div>
 
     <!-- Invite Member Form -->
     <form id="invite-form" onsubmit="handleInviteMember(event)" style="display: flex; gap: 10px; margin-bottom: 20px;">
-      <input type="email" id="invite-email" class="form-input" placeholder="colleague@company.com" required style="flex: 1;" />
+      <input type="email" id="invite-email" class="form-control" placeholder="colleague@company.com" required style="flex: 1;" />
       <button type="submit" class="btn btn-secondary">Invite Member</button>
     </form>
 
     <!-- Members Table -->
-    <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;">
+    <div class="table-container">
       <table class="table" style="margin: 0;">
         <thead>
           <tr>
             <th>Name</th>
             <th>Email</th>
             <th>Role</th>
-            <th>Status</th>
+            <th style="text-align: right;">Status</th>
           </tr>
         </thead>
         <tbody id="members-tbody">
           <tr>
             <td style="font-weight: 600;">{{ user.name if user else "Workspace Owner" }}</td>
-            <td style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted);">{{ user.email if user else "owner@company.com" }}</td>
-            <td><span class="badge" style="background: var(--primary-tint); color: var(--primary); font-weight: 600;">Owner</span></td>
-            <td><span class="status-pill status-active">Active</span></td>
+            <td style="font-family: var(--font-mono); font-size: 12.5px; color: var(--text-muted);">{{ user.email if user else "owner@company.com" }}</td>
+            <td><span class="badge badge-primary">Owner</span></td>
+            <td style="text-align: right;"><span class="status-pill status-active">Active</span></td>
           </tr>
         </tbody>
       </table>
@@ -102,25 +104,25 @@
   </div>
 
   <!-- Subscription Cancellation / Lifecycle Section -->
-  <div class="card" style="padding: 28px; border-radius: 8px; border: 1px solid var(--border-color);">
-    <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 4px; color: var(--danger);">Subscription Lifecycle</h3>
+  <div class="card" style="padding: 24px 28px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+    <h2 style="font-size: 17px; font-weight: 600; margin: 0 0 4px; color: var(--danger);">Subscription Lifecycle</h2>
     <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 20px;">
       Control ongoing plan renewal, scheduled cancellation, or immediate service termination.
     </p>
 
     {% if subscription and subscription.cancel_at_period_end %}
-      <div style="background: #FFFAEB; border: 1px solid #FEDF89; border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div style="background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: var(--radius-md); padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
         <div>
-          <strong style="color: #B54708; font-size: 14px;">Scheduled to cancel on {{ subscription.current_period_end[:10] }}</strong>
-          <p style="font-size: 13px; color: #B54708; margin: 4px 0 0;">Your entitlements and credits will remain usable until the billing period concludes.</p>
+          <strong style="color: var(--warning-text); font-size: 14px;">Scheduled to cancel on {{ subscription.current_period_end[:10] }}</strong>
+          <p style="font-size: 13px; color: var(--warning-text); margin: 4px 0 0;">Your entitlements and credits will remain usable until the billing period concludes.</p>
         </div>
         <button type="button" class="btn btn-sm btn-primary" onclick="resumeSubscription()">Undo Cancellation</button>
       </div>
     {% elif subscription and subscription.status == 'active' %}
-      <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-canvas); padding: 16px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
         <div>
-          <strong style="font-size: 14px;">Active {{ plan.name if plan else 'Starter' }} Subscription</strong>
-          <div style="font-size: 13px; color: var(--text-muted);">Renews automatically each cycle.</div>
+          <strong style="font-size: 14px; color: var(--text-main);">Active {{ plan.name if plan else 'Starter' }} Subscription</strong>
+          <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 2px;">Renews automatically at the end of each billing cycle.</div>
         </div>
         <button type="button" class="btn btn-sm" style="color: var(--danger); border: 1px solid var(--border-color); background: var(--bg-surface);" onclick="openCancelModal()">
           Cancel Subscription...
@@ -133,51 +135,53 @@
 
   <!-- Cancel Modal with Survey -->
   <div class="modal-backdrop" id="cancel-modal" onclick="if(event.target === this) closeCancelModal();">
-    <div class="modal-box" style="max-width: 500px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-        <h3 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--danger);">Cancel Subscription</h3>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--danger);">Cancel Subscription</h3>
         <button type="button" class="btn btn-ghost btn-sm" onclick="closeCancelModal()">&times;</button>
       </div>
 
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
-        We're sorry to see you go. Please let us know why you are cancelling your subscription:
-      </p>
-
       <form id="cancel-survey-form" onsubmit="executeCancelSubscription(event)">
-        <div class="form-group">
-          <label class="form-label">Primary Reason</label>
-          <select id="cancel-reason" class="form-select">
-            <option value="pricing">Pricing or billing structure did not fit our needs</option>
-            <option value="alternative">Transitioning to alternative internal solution</option>
-            <option value="hiatus">Project completed or team on temporary hiatus</option>
-            <option value="missing_features">Missing required enterprise features</option>
-          </select>
-        </div>
+        <div class="modal-body">
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+            We're sorry to see you go. Please let us know why you are cancelling your subscription:
+          </p>
 
-        <div style="margin-bottom: 24px;">
-          <label class="form-label">Effective Cancellation Timing</label>
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-            <label class="card" style="padding: 12px 16px; border-radius: 6px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-              <input type="radio" name="cancel-timing" value="period_end" checked style="margin-top: 3px;" />
-              <div>
-                <strong style="font-size: 13px;">Cancel at End of Billing Period (Recommended)</strong>
-                <div style="font-size: 12px; color: var(--text-muted);">Maintain feature entitlements and credits through {{ subscription.current_period_end[:10] if subscription else "end of period" }}.</div>
-              </div>
-            </label>
+          <div class="form-group">
+            <label class="form-label">Primary Reason</label>
+            <select id="cancel-reason" class="form-select">
+              <option value="pricing">Pricing or billing structure did not fit our needs</option>
+              <option value="alternative">Transitioning to alternative internal solution</option>
+              <option value="hiatus">Project completed or team on temporary hiatus</option>
+              <option value="missing_features">Missing required enterprise features</option>
+            </select>
+          </div>
 
-            <label class="card" style="padding: 12px 16px; border-radius: 6px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
-              <input type="radio" name="cancel-timing" value="immediately" style="margin-top: 3px;" />
-              <div>
-                <strong style="font-size: 13px; color: var(--danger);">Cancel Immediately</strong>
-                <div style="font-size: 12px; color: var(--text-muted);">Terminates subscription and revokes active entitlements at once.</div>
-              </div>
-            </label>
+          <div style="margin-bottom: 8px;">
+            <label class="form-label">Effective Cancellation Timing</label>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <label class="card card-interactive" style="padding: 14px 16px; border-radius: var(--radius-md); display: flex; align-items: flex-start; gap: 12px; cursor: pointer;">
+                <input type="radio" name="cancel-timing" value="period_end" checked style="margin-top: 3px;" />
+                <div>
+                  <strong style="font-size: 13px; color: var(--text-main);">Cancel at End of Billing Period (Recommended)</strong>
+                  <div style="font-size: 12px; color: var(--text-muted);">Maintain feature entitlements and credits through {{ subscription.current_period_end[:10] if subscription else "end of period" }}.</div>
+                </div>
+              </label>
+
+              <label class="card card-interactive" style="padding: 14px 16px; border-radius: var(--radius-md); display: flex; align-items: flex-start; gap: 12px; cursor: pointer;">
+                <input type="radio" name="cancel-timing" value="immediately" style="margin-top: 3px;" />
+                <div>
+                  <strong style="font-size: 13px; color: var(--danger);">Cancel Immediately</strong>
+                  <div style="font-size: 12px; color: var(--text-muted);">Terminates subscription and revokes active entitlements at once.</div>
+                </div>
+              </label>
+            </div>
           </div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <div class="modal-footer">
           <button type="button" class="btn btn-secondary" onclick="closeCancelModal()">Keep Subscription</button>
-          <button type="submit" id="confirm-cancel-btn" class="btn btn-sm" style="background: var(--danger); color: #FFF; border: none; padding: 6px 16px;">
+          <button type="submit" id="confirm-cancel-btn" class="btn btn-danger">
             Confirm Cancellation
           </button>
         </div>
@@ -231,9 +235,9 @@ function handleInviteMember(e) {
   const tr = document.createElement('tr');
   tr.innerHTML = `
     <td style="color: var(--text-muted); font-style: italic;">Pending Acceptance</td>
-    <td style="font-family: var(--font-mono); font-size: 13px;">${email}</td>
-    <td><span class="badge">Member</span></td>
-    <td><span class="status-pill status-trialing">Pending Invite</span></td>
+    <td style="font-family: var(--font-mono); font-size: 12.5px;">${email}</td>
+    <td><span class="badge badge-primary">Member</span></td>
+    <td style="text-align: right;"><span class="status-pill status-trialing">Pending Invite</span></td>
   `;
   tbody.appendChild(tr);
   emailInput.value = '';

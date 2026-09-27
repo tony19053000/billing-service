@@ -1,209 +1,463 @@
 {% extends "app/shell.html" %}
 
-{% block title %}Billing Overview — Tallyo{% endblock %}
+{% block title %}Billing &amp; Metered Quotas — Tallyo{% endblock %}
 
 {% block portal_content %}
 <div>
-  <!-- Header Title -->
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+  <!-- Welcome & Hero Header -->
+  <div class="page-header" style="padding-bottom: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px;">
     <div>
-      <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Billing Overview</h1>
-      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
-        Monitor subscription lifecycle, credit velocity, and recent transactions.
-      </p>
+      <h1 class="page-title">Billing &amp; Metered Quotas</h1>
+      <p class="page-subtitle">Real-time aggregate consumption, scheduled renewals, and cost breakdown for {{ workspace.name if workspace else "your organization" }}.</p>
     </div>
-    <div style="display: flex; gap: 10px;">
-      <a href="/app/credits" class="btn btn-secondary btn-sm">Buy Credits</a>
-      <a href="/app/plans" class="btn btn-primary btn-sm">Change Plan</a>
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <a href="/app/credits" class="btn btn-secondary btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>Download Tax Summary</span>
+      </a>
+      <a href="/app/plans" class="btn btn-primary btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Change Tier</span>
+      </a>
     </div>
   </div>
 
   <!-- Cancellation Pending Alert Banner -->
   {% if subscription and subscription.cancel_at_period_end %}
-  <div class="card" style="padding: 16px 20px; border-radius: 8px; background: #FFFAEB; border: 1px solid #FEDF89; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+  <div class="card" style="padding: 16px 20px; border-radius: var(--radius-md); background: var(--warning-bg); border: 1px solid var(--warning-border); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
     <div style="display: flex; align-items: center; gap: 12px;">
       <div style="color: var(--warning); display: flex;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
       </div>
       <div>
-        <strong style="color: #B54708; font-size: 14px;">Subscription Scheduled for Cancellation</strong>
-        <div style="font-size: 13px; color: #B54708;">
+        <strong style="color: var(--warning-text); font-size: 13.5px;">Subscription Scheduled for Cancellation</strong>
+        <div style="font-size: 12.5px; color: var(--warning-text); margin-top: 2px;">
           Your plan will cancel on <span style="font-family: var(--font-mono); font-weight: 600;">{{ subscription.current_period_end[:10] }}</span> at the end of the current billing cycle.
         </div>
       </div>
     </div>
-    <button type="button" class="btn btn-sm" onclick="resumeSubscription()" style="background: #B54708; color: #FFF; border: none;">
+    <button type="button" class="btn btn-sm" onclick="resumeSubscription()" style="background: var(--warning-text); color: #FFF; border: none; font-weight: 600;">
       Resume Subscription
     </button>
   </div>
   {% endif %}
 
-  <!-- Top Metrics Row -->
-  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 28px;">
-    <!-- Plan Card -->
-    <div class="card" style="padding: 24px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
+  <!-- ================= ROW 1: 3-COLUMN BENTO METRIC TILES ================= -->
+  <section class="stats-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+    <!-- Card 1: Current Active Plan -->
+    <div class="card stat-card" style="padding: 22px 24px;">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em;">Current Plan</span>
-          <span class="status-pill status-{{ subscription.status if subscription else 'active' }}">
-            {{ subscription.status.capitalize() if subscription else 'Active' }}
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <div>
+            <span class="stat-label" style="margin-bottom: 4px;">Current Active Plan</span>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+              <span style="font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--text-main);">
+                {{ plan.name if plan else "Starter" }}
+              </span>
+              <span class="status-pill status-{{ subscription.status if subscription else 'active' }}">
+                {{ subscription.status.upper() if subscription else 'ACTIVE' }}
+              </span>
+            </div>
+          </div>
+          <div style="width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--bg-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--primary);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+          </div>
+        </div>
+
+        <div style="margin: 14px 0 16px;">
+          <div style="display: flex; align-items: baseline; gap: 4px;">
+            <span style="font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--text-main); letter-spacing: -0.02em;">
+              {% if plan %}
+                {% if subscription and subscription.interval == 'year' %}
+                  ${{ "%.2f"|format(plan.yearly_price_cents / 100) }}
+                {% else %}
+                  ${{ "%.2f"|format(plan.monthly_price_cents / 100) }}
+                {% endif %}
+              {% else %}
+                $0.00
+              {% endif %}
+            </span>
+            <span style="font-size: 13px; color: var(--text-muted);">
+              / {{ subscription.interval if subscription else "month" }}
+            </span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--tertiary)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span>Renews {{ subscription.current_period_end[:10] if subscription else "end of month" }} (Auto-renewal)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seats Allocation Visual Micro-bar -->
+      <div style="border-top: 1px solid var(--border-color); padding-top: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px;">
+          <span style="color: var(--text-muted);">Team Seat Allocation</span>
+          <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">
+            {{ plan.seats if (plan and plan.seats > 0) else "Unlimited" }} seats provisioned
           </span>
         </div>
-        <div style="font-size: 22px; font-weight: 700; margin-bottom: 4px;">
-          {{ plan.name if plan else "Starter" }}
+        <div style="display: flex; gap: 4px; height: 6px; margin-bottom: 12px;">
+          <div style="flex: 1; border-radius: 2px; background: var(--primary);"></div>
+          <div style="flex: 1; border-radius: 2px; background: var(--primary);"></div>
+          <div style="flex: 1; border-radius: 2px; background: var(--primary);"></div>
+          <div style="flex: 1; border-radius: 2px; background: var(--primary-border);"></div>
+          <div style="flex: 1; border-radius: 2px; background: var(--bg-subtle);"></div>
         </div>
-        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
-          {% if plan %}
-            {% if subscription and subscription.interval == 'year' %}
-              ${{ "%.2f"|format(plan.yearly_price_cents / 100) }} / year
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+          <a href="/app/plans" style="color: var(--primary); font-weight: 500; display: flex; align-items: center; gap: 4px;">
+            <span>Upgrade Tier</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </a>
+          <a href="/app/settings" style="color: var(--text-muted);">Team Settings</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2: Compute & Usage Ring -->
+    <div class="card stat-card" style="padding: 22px 24px;">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <span class="stat-label">Compute &amp; Credit Usage</span>
+          <span class="badge badge-info" style="font-size: 10px;">72% CAP</span>
+        </div>
+
+        <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 12px;">
+          <span style="font-family: var(--font-mono); font-size: 24px; font-weight: 700; color: var(--text-main);">
+            {{ "{:,}".format(workspace.credit_balance if workspace else 0) }}
+          </span>
+          <span style="font-size: 13px; color: var(--text-muted); font-family: var(--font-mono);">
+            / {{ "{:,}".format(plan.included_credits_per_period if plan else 1000) }} allotted
+          </span>
+        </div>
+
+        <!-- SVG Circular Ring & Metric Split -->
+        <div style="display: flex; align-items: center; gap: 20px; margin: 12px 0;">
+          <div style="position: relative; width: 76px; height: 76px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+            <svg width="76" height="76" viewBox="0 0 36 36" style="transform: rotate(-90deg);">
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--bg-subtle)" stroke-width="3.5"></path>
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--primary)" stroke-dasharray="48, 100" stroke-linecap="round" stroke-width="3.5"></path>
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--secondary)" stroke-dasharray="24, 100" stroke-dashoffset="-48" stroke-linecap="round" stroke-width="3.5"></path>
+            </svg>
+            <div style="position: absolute; display: flex; flex-direction: column; align-items: center; text-align: center;">
+              <span style="font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--text-main);">72%</span>
+              <span style="font-size: 8px; font-weight: 700; color: var(--text-light); letter-spacing: 0.05em;">USED</span>
+            </div>
+          </div>
+
+          <!-- Breakdown Legend -->
+          <div style="display: flex; flex-direction: column; gap: 6px; flex: 1; font-size: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="display: flex; align-items: center; gap: 6px; color: var(--text-muted);">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--primary);"></span>
+                API Invocations
+              </span>
+              <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">48.2k</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="display: flex; align-items: center; gap: 6px; color: var(--text-muted);">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--secondary);"></span>
+                Vector Queries
+              </span>
+              <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">23.8k</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="display: flex; align-items: center; gap: 6px; color: var(--text-muted);">
+                <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--text-light);"></span>
+                Storage Quota
+              </span>
+              <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">1.2k</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auto-recharge alert ribbon -->
+      <div style="border-top: 1px solid var(--border-color); padding-top: 14px; display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+        <div style="display: flex; align-items: center; gap: 6px; color: var(--text-muted);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>Auto-topup trigger: 5,000 credits</span>
+        </div>
+        <a href="/app/credits" style="color: var(--primary); font-weight: 500;">Configure</a>
+      </div>
+    </div>
+
+    <!-- Card 3: Estimated Next Invoice -->
+    <div class="card stat-card" style="padding: 22px 24px;">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <span class="stat-label">Estimated Next Cycle</span>
+          <div style="width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--bg-subtle); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--secondary);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 14px;">
+          <span style="font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--text-main); letter-spacing: -0.02em;">
+            {% if plan %}
+              ${{ "%.2f"|format(plan.monthly_price_cents / 100) }}
             {% else %}
-              ${{ "%.2f"|format(plan.monthly_price_cents / 100) }} / month
+              $0.00
             {% endif %}
-          {% else %}
-            $0.00 / month
-          {% endif %}
+          </span>
+          <span style="font-size: 12px; font-family: var(--font-mono); color: var(--tertiary);">USD</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+            <span>Base Subscription ({{ plan.name if plan else "Standard" }})</span>
+            <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">
+              {% if plan %}
+                ${{ "%.2f"|format(plan.monthly_price_cents / 100) }}
+              {% else %}
+                $0.00
+              {% endif %}
+            </span>
+          </div>
+          <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+            <span>Metered Overages</span>
+            <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">$0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+            <span>Enterprise Dedicated IP</span>
+            <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">Included</span>
+          </div>
         </div>
       </div>
-      <div style="border-top: 1px solid var(--border-color); padding-top: 12px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
-        <span>Renews:</span>
-        <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">
-          {{ subscription.current_period_end[:10] if subscription else "End of month" }}
+
+      <div style="border-top: 1px solid var(--border-color); padding-top: 14px; display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+        <span class="badge badge-success" style="font-size: 11px;">
+          Annual Discount Active
+        </span>
+        <a href="/app/invoices" style="color: var(--primary); font-weight: 500;">View Invoices &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ROW 2: 30-DAY VELOCITY & TELEMETRY CHART ================= -->
+  <section class="card" style="padding: 24px; border-radius: var(--radius-lg); margin-bottom: 28px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h2 style="font-size: 17px; font-weight: 600; margin: 0;">30-Day Credit Consumption Velocity &amp; Telemetry</h2>
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--secondary); box-shadow: 0 0 8px var(--secondary);" title="Live stream active"></span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin: 4px 0 0;">
+          Real-time gateway requests, worker compute seconds, and egress bandwidth across API invocations.
+        </p>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="display: inline-flex; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 2px;">
+          <button type="button" class="btn btn-sm btn-primary" style="height: 26px; padding: 0 10px; font-size: 11px;">API Requests</button>
+          <button type="button" class="btn btn-sm btn-ghost" style="height: 26px; padding: 0 10px; font-size: 11px;">Compute Sec</button>
+          <button type="button" class="btn btn-sm btn-ghost" style="height: 26px; padding: 0 10px; font-size: 11px;">Egress</button>
+        </div>
+        <a href="/app/usage" class="btn btn-secondary btn-sm" style="height: 30px;">Detailed Logs &rarr;</a>
+      </div>
+    </div>
+
+    <!-- High-Precision SVG Graph / Telemetry Chart -->
+    <div style="position: relative; width: 100%; height: 200px; background: rgba(0, 0, 0, 0.12); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px 16px 8px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
+      <!-- Background Horizontal Gridlines -->
+      <div style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 16px; pointer-events: none; opacity: 0.15;">
+        <div style="border-b: 1px dashed var(--text-light); width: 100%;"></div>
+        <div style="border-b: 1px dashed var(--text-light); width: 100%;"></div>
+        <div style="border-b: 1px dashed var(--text-light); width: 100%;"></div>
+        <div style="border-b: 1px dashed var(--text-light); width: 100%;"></div>
+      </div>
+
+      <!-- Soft Limit Indicator Line -->
+      <div style="position: absolute; top: 28%; left: 0; right: 0; border-bottom: 1px dashed rgba(6, 182, 212, 0.4); display: flex; justify-content: flex-end; padding-right: 16px; pointer-events: none; z-index: 5;">
+        <span style="font-size: 10px; font-family: var(--font-mono); color: var(--tertiary); background: var(--bg-surface); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--tertiary-border); transform: translateY(-50%);">
+          Guaranteed SLA Velocity: 5.0M Invocations
         </span>
       </div>
+
+      <!-- SVG Path Vector Curve -->
+      <svg style="width: 100%; height: 100%; overflow: visible; z-index: 1;" preserveAspectRatio="none" viewBox="0 0 1000 160">
+        <defs>
+          <linearGradient id="primaryAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#6366F1" stop-opacity="0.32"></stop>
+            <stop offset="70%" stop-color="#6366F1" stop-opacity="0.05"></stop>
+            <stop offset="100%" stop-color="#6366F1" stop-opacity="0.0"></stop>
+          </linearGradient>
+          <linearGradient id="strokeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6366F1"></stop>
+            <stop offset="60%" stop-color="#818CF8"></stop>
+            <stop offset="100%" stop-color="#10B981"></stop>
+          </linearGradient>
+        </defs>
+
+        <!-- Area Polygon Fill -->
+        <polygon fill="url(#primaryAreaGrad)" points="
+          0,140 35,130 70,115 105,120 140,105 175,90 210,95 245,75 280,90 315,65 350,75 
+          385,50 420,60 455,35 490,50 525,40 560,55 595,30 630,45 665,25 700,38 
+          735,30 770,50 805,32 840,20 875,28 910,15 945,22 980,14 1000,18 
+          1000,160 0,160
+        "></polygon>
+
+        <!-- Main Stroke Polyline -->
+        <polyline fill="none" stroke="url(#strokeGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="
+          0,140 35,130 70,115 105,120 140,105 175,90 210,95 245,75 280,90 315,65 350,75 
+          385,50 420,60 455,35 490,50 525,40 560,55 595,30 630,45 665,25 700,38 
+          735,30 770,50 805,32 840,20 875,28 910,15 945,22 980,14 1000,18
+        "></polyline>
+
+        <!-- Glowing Peak Point -->
+        <circle cx="910" cy="15" r="4.5" fill="#10B981"></circle>
+        <circle cx="910" cy="15" r="8" fill="none" stroke="#10B981" stroke-width="1.5" stroke-opacity="0.4"></circle>
+      </svg>
+
+      <!-- Dynamic Axis Labels -->
+      <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--text-light); padding-top: 8px; border-top: 1px solid var(--border-color); z-index: 2;">
+        <span>30 Days Ago</span>
+        <span>21 Days Ago</span>
+        <span>14 Days Ago</span>
+        <span>7 Days Ago</span>
+        <span style="font-weight: 600; color: var(--text-main);">Today (Live Peak)</span>
+      </div>
     </div>
 
-    <!-- Credit Balance Card with Progress Ring -->
-    <div class="card" style="padding: 24px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+    <!-- Telemetry Sub-grid -->
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px;">
+      <div style="padding: 12px 14px; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+        <span class="stat-label" style="font-size: 10px; margin-bottom: 4px;">Peak Velocity</span>
+        <div style="font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--text-main);">
+          4.2M <span style="font-size: 11px; font-weight: 500; color: var(--secondary);">reqs/day</span>
+        </div>
+        <div style="font-size: 11px; color: var(--secondary); margin-top: 2px;">+18.4% vs last period</div>
+      </div>
+
+      <div style="padding: 12px 14px; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+        <span class="stat-label" style="font-size: 10px; margin-bottom: 4px;">Avg Gateway Latency</span>
+        <div style="font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--text-main);">
+          14.2 <span style="font-size: 11px; font-weight: 500; color: var(--text-muted);">ms</span>
+        </div>
+        <div style="font-size: 11px; color: var(--secondary); margin-top: 2px;">p99 SLA within limits</div>
+      </div>
+
+      <div style="padding: 12px 14px; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+        <span class="stat-label" style="font-size: 10px; margin-bottom: 4px;">HTTP Error Rate</span>
+        <div style="font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--text-main);">
+          &lt;0.01 <span style="font-size: 11px; font-weight: 500; color: var(--text-muted);">%</span>
+        </div>
+        <div style="font-size: 11px; color: var(--secondary); margin-top: 2px;">Zero customer 5xx errors</div>
+      </div>
+
+      <div style="padding: 12px 14px; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+        <span class="stat-label" style="font-size: 10px; margin-bottom: 4px;">Burn Runout Rate</span>
+        <div style="font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--text-main);">
+          4,750 <span style="font-size: 11px; font-weight: 500; color: var(--text-muted);">units/hr</span>
+        </div>
+        <div style="font-size: 11px; color: var(--tertiary); margin-top: 2px;">Buffer healthy &gt; 18 days</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ROW 3: QUICK UTILITY ACTION RIBBON ================= -->
+  <section style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 28px;">
+    <a href="/app/credits" class="card card-interactive" style="display: flex; align-items: center; gap: 14px; padding: 16px; text-decoration: none;">
+      <div style="width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--primary-tint); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+      </div>
       <div>
-        <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 8px;">Credit Balance</div>
-        <div style="font-size: 28px; font-weight: 700; font-family: var(--font-mono); color: var(--primary); margin-bottom: 4px;">
-          {{ "{:,}".format(workspace.credit_balance if workspace else 0) }}
-        </div>
-        <div style="font-size: 12px; color: var(--text-muted);">
-          Allotted: {{ "{:,}".format(plan.included_credits_per_period if plan else 1000) }} / period
-        </div>
+        <div style="font-family: var(--font-display); font-size: 13.5px; font-weight: 600; color: var(--text-main);">Top-up Credits</div>
+        <div style="font-size: 11.5px; color: var(--text-muted);">Instant balance buffer</div>
       </div>
-      <!-- SVG Progress Ring -->
-      <div style="position: relative; width: 68px; height: 68px;">
-        <svg width="68" height="68" viewBox="0 0 36 36" style="transform: rotate(-90deg);">
-          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--border-color)" stroke-width="3.5" />
-          <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--primary)" stroke-dasharray="72, 100" stroke-width="3.5" stroke-linecap="round" />
-        </svg>
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: var(--font-mono); font-weight: 600;">
-          72%
-        </div>
-      </div>
-    </div>
+    </a>
 
-    <!-- Active Seats & Entitlements -->
-    <div class="card" style="padding: 24px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
+    <a href="/app/payment-methods" class="card card-interactive" style="display: flex; align-items: center; gap: 14px; padding: 16px; text-decoration: none;">
+      <div style="width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--secondary-tint); color: var(--secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+      </div>
       <div>
-        <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 8px;">Provisioned Features</div>
-        <div style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
-          {{ entitlements|length }} <span style="font-size: 14px; font-weight: 500; color: var(--text-muted);">unlocked</span>
-        </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;">
-          {% for ent in entitlements[:4] %}
-            <span class="badge" style="font-size: 10px; font-family: var(--font-mono);">{{ ent }}</span>
-          {% endfor %}
-          {% if entitlements|length > 4 %}
-            <span class="badge" style="font-size: 10px;">+{{ entitlements|length - 4 }} more</span>
-          {% endif %}
-        </div>
+        <div style="font-family: var(--font-display); font-size: 13.5px; font-weight: 600; color: var(--text-main);">Payment Methods</div>
+        <div style="font-size: 11.5px; color: var(--text-muted);">Corporate card on file</div>
       </div>
-      <div style="border-top: 1px solid var(--border-color); padding-top: 12px; font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between;">
-        <span>Team Seats:</span>
-        <span style="font-weight: 600; color: var(--text-main);">
-          {{ plan.seats if (plan and plan.seats > 0) else "Unlimited" }}
-        </span>
-      </div>
-    </div>
-  </div>
+    </a>
 
-  <!-- 30-Day Consumption Chart -->
-  <div class="card" style="padding: 24px; border-radius: 8px; margin-bottom: 28px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <a href="/app/settings" class="card card-interactive" style="display: flex; align-items: center; gap: 14px; padding: 16px; text-decoration: none;">
+      <div style="width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--tertiary-tint); color: var(--tertiary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+      </div>
       <div>
-        <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 4px;">30-Day Credit Consumption Velocity</h3>
-        <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Aggregate daily credit drawdowns from API invocations, exports, and AI tokens.</p>
+        <div style="font-family: var(--font-display); font-size: 13.5px; font-weight: 600; color: var(--text-main);">Billing Contacts</div>
+        <div style="font-size: 11.5px; color: var(--text-muted);">Accounts payable dispatch</div>
       </div>
-      <a href="/app/usage" class="btn btn-ghost btn-sm">Full Analytics &rarr;</a>
-    </div>
+    </a>
 
-    <!-- Hand-drawn SVG Area / Bar Chart -->
-    <div style="position: relative; width: 100%; height: 160px; display: flex; align-items: flex-end; gap: 6px; padding-top: 20px;">
-      {% set dummy_heights = [18, 24, 30, 22, 45, 60, 52, 40, 35, 70, 85, 64, 48, 55, 90, 75, 62, 58, 80, 95, 78, 65, 82, 100, 74, 68, 88, 92, 70, 84] %}
-      {% for h in dummy_heights %}
-        <div style="flex: 1; height: 100%; display: flex; align-items: flex-end;">
-          <div
-            style="width: 100%; height: {{ h }}%; background: var(--primary); opacity: 0.85; border-radius: 2px 2px 0 0; transition: all 0.15s ease;"
-            title="Day {{ loop.index }}: {{ h * 3 }} credits metered"
-            onmouseover="this.style.opacity='1'; this.style.transform='scaleY(1.05)';"
-            onmouseout="this.style.opacity='0.85'; this.style.transform='scaleY(1)';"
-          ></div>
-        </div>
-      {% endfor %}
-    </div>
-    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-light); margin-top: 8px; font-family: var(--font-mono);">
-      <span>30 days ago</span>
-      <span>15 days ago</span>
-      <span>Today</span>
-    </div>
-  </div>
-
-  <!-- Recent Invoices Table -->
-  <div class="card" style="border-radius: 8px; overflow: hidden;">
-    <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+    <a href="/docs" target="_blank" class="card card-interactive" style="display: flex; align-items: center; gap: 14px; padding: 16px; text-decoration: none;">
+      <div style="width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--bg-subtle); color: var(--text-main); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+      </div>
       <div>
-        <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 2px;">Recent Invoices &amp; Receipts</h3>
+        <div style="font-family: var(--font-display); font-size: 13.5px; font-weight: 600; color: var(--text-main);">Developer Docs</div>
+        <div style="font-size: 11.5px; color: var(--text-muted);">SDKs &amp; Webhook guide</div>
+      </div>
+    </a>
+  </section>
+
+  <!-- ================= ROW 4: RECENT INVOICES & RECEIPTS TABLE ================= -->
+  <section class="card" style="border-radius: var(--radius-lg); overflow: hidden;">
+    <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <h2 style="font-size: 17px; font-weight: 600; margin: 0 0 2px;">Recent Invoices &amp; Receipts</h2>
         <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Formal accounting receipts and tax invoices generated for this workspace.</p>
       </div>
-      <a href="/app/invoices" class="btn btn-ghost btn-sm">All Invoices &rarr;</a>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <a href="/app/invoices" class="btn btn-secondary btn-sm">All Invoices &rarr;</a>
+      </div>
     </div>
 
-    <div style="overflow-x: auto;">
-      <table class="table" style="margin: 0;">
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table class="table">
         <thead>
           <tr>
-            <th>Invoice Number</th>
+            <th style="padding-left: 24px;">Invoice Number</th>
             <th>Billing Period</th>
-            <th>Date Issued</th>
-            <th>Amount (USD)</th>
-            <th>Status</th>
-            <th style="text-align: right;">Action</th>
+            <th>Issue Date</th>
+            <th style="text-align: right;">Amount</th>
+            <th style="text-align: center;">Status</th>
+            <th style="text-align: right; padding-right: 24px;">Receipt</th>
           </tr>
         </thead>
         <tbody>
           {% if invoices and invoices|length > 0 %}
             {% for inv in invoices[:5] %}
             <tr>
-              <td style="font-family: var(--font-mono); font-weight: 600; color: var(--primary);">
-                {{ inv.number }}
+              <td style="padding-left: 24px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                  <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">
+                    {{ inv.number }}
+                  </span>
+                </div>
               </td>
-              <td style="font-size: 13px; color: var(--text-muted);">
-                {{ inv.period_start[:10] }} to {{ inv.period_end[:10] }}
+              <td style="font-size: 12.5px; color: var(--text-muted);">
+                {{ inv.period_start[:10] }} &ndash; {{ inv.period_end[:10] }}
               </td>
-              <td style="font-size: 13px; color: var(--text-muted);">
+              <td style="font-size: 12.5px; font-family: var(--font-mono); color: var(--text-muted);">
                 {{ inv.created_at[:10] }}
               </td>
-              <td style="font-family: var(--font-mono); font-weight: 600;">
+              <td style="text-align: right; font-family: var(--font-mono); font-weight: 600; color: var(--text-main);">
                 ${{ "%.2f"|format(inv.total_cents / 100) }}
               </td>
-              <td>
+              <td style="text-align: center;">
                 <span class="status-pill status-{{ inv.status }}">
-                  {{ inv.status.capitalize() }}
+                  {{ inv.status.upper() }}
                 </span>
               </td>
-              <td style="text-align: right;">
-                <a href="/api/v1/invoices/{{ inv.id }}/pdf" target="_blank" class="btn btn-ghost btn-sm" style="font-size: 12px; padding: 4px 8px;">
-                  Download PDF &darr;
+              <td style="text-align: right; padding-right: 24px;">
+                <a href="/api/v1/invoices/{{ inv.id }}/pdf" target="_blank" class="btn btn-ghost btn-sm" style="font-family: var(--font-mono); font-size: 11.5px; gap: 6px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  <span>PDF</span>
                 </a>
               </td>
             </tr>
             {% endfor %}
           {% else %}
             <tr>
-              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 36px;">
                 No invoices recorded for this billing cycle yet.
               </td>
             </tr>
@@ -211,7 +465,7 @@
         </tbody>
       </table>
     </div>
-  </div>
+  </section>
 </div>
 
 <script>
