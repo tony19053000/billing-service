@@ -1,0 +1,195 @@
+{% extends "app/shell.html" %}
+
+{% block title %}Invoices &amp; Receipts — Tallyo{% endblock %}
+
+{% block portal_content %}
+<div>
+  <!-- Header -->
+  <div style="margin-bottom: 24px;">
+    <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Invoices &amp; Receipts</h1>
+    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+      Official billing statements, itemized tax invoices, and payment receipts.
+    </p>
+  </div>
+
+  <!-- Invoices Card Table -->
+  <div class="card" style="border-radius: 8px; overflow: hidden;">
+    <div style="overflow-x: auto;">
+      <table class="table" style="margin: 0;">
+        <thead>
+          <tr>
+            <th>Invoice Number</th>
+            <th>Billing Period</th>
+            <th>Date Issued</th>
+            <th>Amount (USD)</th>
+            <th>Status</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if invoices and invoices|length > 0 %}
+            {% for inv in invoices %}
+            <tr>
+              <td style="font-family: var(--font-mono); font-weight: 600; color: var(--primary);">
+                {{ inv.number }}
+              </td>
+              <td style="font-size: 13px; color: var(--text-muted);">
+                {{ inv.period_start[:10] }} to {{ inv.period_end[:10] }}
+              </td>
+              <td style="font-size: 13px; color: var(--text-muted);">
+                {{ inv.created_at[:10] }}
+              </td>
+              <td style="font-family: var(--font-mono); font-weight: 600;">
+                ${{ "%.2f"|format(inv.total_cents / 100) }}
+              </td>
+              <td>
+                <span class="status-pill status-{{ inv.status }}">
+                  {{ inv.status.capitalize() }}
+                </span>
+              </td>
+              <td style="text-align: right; display: flex; justify-content: flex-end; gap: 8px;">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  onclick="openInvoiceDetail('{{ inv.id }}')"
+                >
+                  View Lines
+                </button>
+                <a
+                  href="/api/v1/invoices/{{ inv.id }}/pdf"
+                  target="_blank"
+                  class="btn btn-ghost btn-sm"
+                  title="Open Printable PDF"
+                >
+                  Download PDF &darr;
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                No invoices found for this workspace.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Invoice Detail Slide-Over Drawer -->
+  <div class="slideover-backdrop" id="invoice-slideover" onclick="if(event.target === this) closeInvoiceDetail();">
+    <div class="slideover-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-color);">
+        <div>
+          <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em;">Invoice Details</span>
+          <h3 id="drawer-inv-number" style="font-size: 18px; font-weight: 700; margin: 2px 0 0; font-family: var(--font-mono); color: var(--primary);">
+            TLY-...
+          </h3>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeInvoiceDetail()">&times;</button>
+      </div>
+
+      <div style="padding: 24px; flex: 1; overflow-y: auto;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; background: var(--bg-canvas); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted);">Status</div>
+            <div id="drawer-inv-status" style="margin-top: 4px;">—</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: var(--text-muted);">Issue Date</div>
+            <div id="drawer-inv-date" style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; margin-top: 4px;">—</div>
+          </div>
+          <div style="grid-column: span 2;">
+            <div style="font-size: 11px; color: var(--text-muted);">Billing Period</div>
+            <div id="drawer-inv-period" style="font-family: var(--font-mono); font-size: 12px; margin-top: 4px;">—</div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Itemized Charges</h4>
+        <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+          <table class="table" style="margin: 0; font-size: 13px;">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th style="text-align: right;">Qty</th>
+                <th style="text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="drawer-lines-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Financial Totals Box -->
+        <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+          <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+            <span>Subtotal:</span>
+            <span id="drawer-inv-subtotal" style="font-family: var(--font-mono); font-weight: 500;">$0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted);">
+            <span>Taxes &amp; VAT:</span>
+            <span id="drawer-inv-tax" style="font-family: var(--font-mono); font-weight: 500;">$0.00</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: var(--text-main); padding-top: 8px; border-top: 1px solid var(--border-color);">
+            <span>Total Billed:</span>
+            <span id="drawer-inv-total" style="font-family: var(--font-mono); color: var(--primary);">$0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; background: var(--bg-surface);">
+        <button type="button" class="btn btn-secondary" onclick="closeInvoiceDetail()">Close</button>
+        <a id="drawer-pdf-link" href="#" target="_blank" class="btn btn-primary">Open Printable PDF</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function openInvoiceDetail(invoiceId) {
+  const drawer = document.getElementById('invoice-slideover');
+  const tbody = document.getElementById('drawer-lines-tbody');
+  tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:16px;">Loading item details...</td></tr>';
+  drawer.classList.add('open');
+
+  try {
+    const res = await fetch('/api/v1/invoices/' + invoiceId);
+    if (!res.ok) throw new Error();
+    const inv = await res.json();
+
+    document.getElementById('drawer-inv-number').textContent = inv.number;
+    document.getElementById('drawer-inv-status').innerHTML = '<span class="status-pill status-' + inv.status + '">' + inv.status.toUpperCase() + '</span>';
+    document.getElementById('drawer-inv-date').textContent = inv.created_at.substring(0, 10);
+    document.getElementById('drawer-inv-period').textContent = inv.period_start.substring(0, 10) + ' to ' + inv.period_end.substring(0, 10);
+    document.getElementById('drawer-inv-subtotal').textContent = '$' + (inv.subtotal_cents / 100).toFixed(2);
+    document.getElementById('drawer-inv-tax').textContent = '$' + (inv.tax_cents / 100).toFixed(2);
+    document.getElementById('drawer-inv-total').textContent = '$' + (inv.total_cents / 100).toFixed(2);
+    document.getElementById('drawer-pdf-link').href = '/api/v1/invoices/' + inv.id + '/pdf';
+
+    tbody.innerHTML = '';
+    if (inv.lines && inv.lines.length > 0) {
+      inv.lines.forEach(l => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${l.description}</td>
+          <td style="text-align: right; font-family: var(--font-mono);">${l.quantity}</td>
+          <td style="text-align: right; font-family: var(--font-mono); font-weight: 600;">$${(l.amount_cents / 100).toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } else {
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:16px;">Standard recurring subscription interval.</td></tr>';
+    }
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--danger);padding:16px;">Unable to load invoice details.</td></tr>';
+  }
+}
+
+function closeInvoiceDetail() {
+  document.getElementById('invoice-slideover').classList.remove('open');
+}
+</script>
+{% endblock %}

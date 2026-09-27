@@ -1,0 +1,209 @@
+{% extends "app/shell.html" %}
+
+{% block title %}Usage Credits &amp; Ledger — Tallyo{% endblock %}
+
+{% block portal_content %}
+<div>
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Credit Balance &amp; Ledger</h1>
+      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+        Immutable double-entry transaction history for consumption credits and top-ups.
+      </p>
+    </div>
+    <button type="button" class="btn btn-primary" onclick="openTopUpModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <span>Purchase Credits</span>
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 28px;">
+    <div class="card" style="padding: 24px; border-radius: 8px;">
+      <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 8px;">Current Balance</div>
+      <div style="font-size: 32px; font-weight: 700; font-family: var(--font-mono); color: var(--primary); margin-bottom: 4px;">
+        {{ "{:,}".format(workspace.credit_balance if workspace else 0) }}
+      </div>
+      <div style="font-size: 13px; color: var(--text-muted);">Available for immediate consumption</div>
+    </div>
+
+    <div class="card" style="padding: 24px; border-radius: 8px;">
+      <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 8px;">Included Plan Grant</div>
+      <div style="font-size: 32px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main); margin-bottom: 4px;">
+        {{ "{:,}".format(plan.included_credits_per_period if plan else 1000) }}
+      </div>
+      <div style="font-size: 13px; color: var(--text-muted);">Renews on {{ subscription.current_period_end[:10] if subscription else "end of period" }}</div>
+    </div>
+
+    <div class="card" style="padding: 24px; border-radius: 8px;">
+      <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 8px;">Top-Up Unit Pricing</div>
+      <div style="font-size: 32px; font-weight: 700; font-family: var(--font-mono); color: var(--success); margin-bottom: 4px;">
+        $10.00
+      </div>
+      <div style="font-size: 13px; color: var(--text-muted);">Per 5,000 credits &middot; No expiration</div>
+    </div>
+  </div>
+
+  <!-- Immutable Ledger Table Card -->
+  <div class="card" style="border-radius: 8px; overflow: hidden;">
+    <div style="padding: 18px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 2px;">Credit Transaction Ledger</h3>
+        <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Audit trail of all allotments, top-ups, and consumption events.</p>
+      </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table class="table" style="margin: 0;">
+        <thead>
+          <tr>
+            <th>Entry ID</th>
+            <th>Delta</th>
+            <th>Reason</th>
+            <th>Reference</th>
+            <th>Recorded At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if ledger and ledger|length > 0 %}
+            {% for row in ledger %}
+            <tr>
+              <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
+                {{ row.id }}
+              </td>
+              <td style="font-family: var(--font-mono); font-weight: 700; {% if row.delta > 0 %}color: var(--success);{% else %}color: var(--danger);{% endif %}">
+                {% if row.delta > 0 %}+{{ "{:,}".format(row.delta) }}{% else %}{{ "{:,}".format(row.delta) }}{% endif %}
+              </td>
+              <td>
+                <span class="badge" style="font-family: var(--font-mono); font-size: 11px;">
+                  {{ row.reason }}
+                </span>
+              </td>
+              <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-light);">
+                {{ row.reference or "—" }}
+              </td>
+              <td style="font-size: 12px; color: var(--text-muted);">
+                {{ row.created_at[:19].replace('T', ' ') }}
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                No transactions recorded in the credit ledger.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Top-Up Modal -->
+  <div class="modal-backdrop" id="topup-modal" onclick="if(event.target === this) closeTopUpModal();">
+    <div class="modal-box" style="max-width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Purchase Usage Credits</h3>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeTopUpModal()">&times;</button>
+      </div>
+
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+        Select a credit pack. Top-up packs are billed immediately at $10.00 per 5,000 credits, and credits never expire.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+        <label class="card" style="padding: 14px 18px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <input type="radio" name="topup-pack" value="5000" checked />
+            <div>
+              <strong style="font-size: 14px; font-family: var(--font-mono);">5,000 Credits</strong>
+              <div style="font-size: 12px; color: var(--text-muted);">Standard pack</div>
+            </div>
+          </div>
+          <span style="font-family: var(--font-mono); font-weight: 700; font-size: 16px;">$10.00</span>
+        </label>
+
+        <label class="card" style="padding: 14px 18px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <input type="radio" name="topup-pack" value="10000" />
+            <div>
+              <strong style="font-size: 14px; font-family: var(--font-mono);">10,000 Credits</strong>
+              <div style="font-size: 12px; color: var(--text-muted);">2 packs</div>
+            </div>
+          </div>
+          <span style="font-family: var(--font-mono); font-weight: 700; font-size: 16px;">$20.00</span>
+        </label>
+
+        <label class="card" style="padding: 14px 18px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <input type="radio" name="topup-pack" value="25000" />
+            <div>
+              <strong style="font-size: 14px; font-family: var(--font-mono);">25,000 Credits</strong>
+              <div style="font-size: 12px; color: var(--text-muted);">5 packs</div>
+            </div>
+          </div>
+          <span style="font-family: var(--font-mono); font-weight: 700; font-size: 16px;">$50.00</span>
+        </label>
+
+        <label class="card" style="padding: 14px 18px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <input type="radio" name="topup-pack" value="50000" />
+            <div>
+              <strong style="font-size: 14px; font-family: var(--font-mono);">50,000 Credits</strong>
+              <div style="font-size: 12px; color: var(--text-muted);">10 packs</div>
+            </div>
+          </div>
+          <span style="font-family: var(--font-mono); font-weight: 700; font-size: 16px;">$100.00</span>
+        </label>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" class="btn btn-secondary" onclick="closeTopUpModal()">Cancel</button>
+        <button type="button" id="confirm-topup-btn" class="btn btn-primary" onclick="executeTopUp()">Authorize &amp; Purchase</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function openTopUpModal() {
+  document.getElementById('topup-modal').classList.add('open');
+}
+
+function closeTopUpModal() {
+  document.getElementById('topup-modal').classList.remove('open');
+}
+
+async function executeTopUp() {
+  const selected = document.querySelector('input[name="topup-pack"]:checked');
+  if (!selected) return;
+  const credits = parseInt(selected.value, 10);
+  const btn = document.getElementById('confirm-topup-btn');
+  btn.disabled = true;
+  btn.textContent = 'Processing transaction...';
+
+  try {
+    const res = await fetch('/api/v1/credits/top-up', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credits })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Credits added successfully! Balance updated.', 'success');
+      setTimeout(() => window.location.reload(), 800);
+    } else {
+      showToast(data.error ? data.error.message : 'Top-up failed.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Authorize & Purchase';
+    }
+  } catch (err) {
+    showToast('Network error while purchasing credits.', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Authorize & Purchase';
+  }
+}
+</script>
+{% endblock %}

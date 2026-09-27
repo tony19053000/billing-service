@@ -1,0 +1,212 @@
+{% extends "app/shell.html" %}
+
+{% block title %}Plans &amp; Tiers — Tallyo{% endblock %}
+
+{% block portal_content %}
+<div>
+  <!-- Header -->
+  <div style="margin-bottom: 28px;">
+    <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Subscription Plans &amp; Tiers</h1>
+    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+      Upgrade or downgrade your workspace tier. All mid-cycle changes are prorated to the exact second.
+    </p>
+  </div>
+
+  <!-- Interval Toggle -->
+  <div style="display: flex; justify-content: center; margin-bottom: 32px;">
+    <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--bg-surface); padding: 4px 8px; border-radius: 999px; border: 1px solid var(--border-color);">
+      <button type="button" id="tab-month" onclick="setPortalInterval('month')" class="btn btn-sm btn-primary" style="border-radius: 999px;">Monthly</button>
+      <button type="button" id="tab-year" onclick="setPortalInterval('year')" class="btn btn-sm btn-ghost" style="border-radius: 999px;">
+        <span>Annual</span>
+        <span class="status-pill status-active" style="font-size: 10px; padding: 1px 6px;">2 months free</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Plan Cards Grid -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px;">
+    {% for p in plans %}
+    {% set is_current = (subscription and subscription.plan_id == p.id) %}
+    <div class="card" style="padding: 28px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; {% if is_current %}border: 2px solid var(--primary); box-shadow: var(--shadow-md);{% endif %}">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">{{ p.name }}</span>
+          {% if is_current %}
+            <span class="status-pill status-active">Current Plan</span>
+          {% endif %}
+        </div>
+
+        <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px;">
+          <span class="plan-price-val" data-month="${{ (p.monthly_price_cents / 100)|int }}" data-year="${{ (p.yearly_price_cents / 100)|int }}" style="font-size: 38px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main);">
+            ${{ (p.monthly_price_cents / 100)|int }}
+          </span>
+          <span class="plan-price-period" style="color: var(--text-muted); font-size: 13px;">/ month</span>
+        </div>
+
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+          {{ p.description }}
+        </p>
+
+        <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-bottom: 24px;">
+          <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); margin-bottom: 10px;">Tier Allotments</div>
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+            <li style="display: flex; align-items: center; gap: 8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>{{ "{:,}".format(p.included_credits_per_period) }}</strong> credits / period</span>
+            </li>
+            <li style="display: flex; align-items: center; gap: 8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span><strong>{{ p.seats if p.seats > 0 else "Unlimited" }}</strong> team seats</span>
+            </li>
+            {% for f in p.features %}
+            <li style="display: flex; align-items: center; gap: 8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>{{ f.name }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        {% if is_current %}
+          <button class="btn btn-secondary" disabled style="width: 100%; justify-content: center; opacity: 0.6; cursor: default;">
+            Currently Subscribed
+          </button>
+        {% else %}
+          <button
+            class="btn {% if p.id == 'plan_business' or p.id == 'plan_pro' %}btn-primary{% else %}btn-secondary{% endif %}"
+            style="width: 100%; justify-content: center;"
+            onclick="openProrationPreview('{{ p.id }}', '{{ p.name }}', {{ p.monthly_price_cents }}, {{ p.yearly_price_cents }}, {{ p.included_credits_per_period }})"
+          >
+            Switch to {{ p.name }}
+          </button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Proration Preview Modal -->
+  <div class="modal-backdrop" id="proration-modal" onclick="if(event.target === this) closeProrationModal();">
+    <div class="modal-box" style="max-width: 500px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Confirm Plan Change</h3>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeProrationModal()">&times;</button>
+      </div>
+
+      <div style="background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+          <span style="color: var(--text-muted);">Selected Plan:</span>
+          <strong id="modal-target-plan" style="color: var(--text-main);">Pro</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+          <span style="color: var(--text-muted);">Billing Cadence:</span>
+          <span id="modal-target-interval" style="font-weight: 600; text-transform: capitalize;">Monthly</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+          <span style="color: var(--text-muted);">New Credit Allotment:</span>
+          <span id="modal-target-credits" style="font-family: var(--font-mono); font-weight: 600;">20,000</span>
+        </div>
+        <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 12px; display: flex; justify-content: space-between; align-items: baseline;">
+          <span style="font-weight: 600; font-size: 14px;">Estimated Charge Today:</span>
+          <span id="modal-proration-amount" style="font-size: 22px; font-weight: 700; font-family: var(--font-mono); color: var(--primary);">$31.42</span>
+        </div>
+      </div>
+
+      <p id="modal-explanation" style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
+        Your existing billing period will be credited proportionally, and the new plan will be applied immediately. A formal invoice receipt will be recorded.
+      </p>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" class="btn btn-secondary" onclick="closeProrationModal()">Cancel</button>
+        <button type="button" id="confirm-plan-btn" class="btn btn-primary" onclick="executePlanChange()">Confirm &amp; Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentInterval = 'month';
+let targetPlanId = null;
+
+function setPortalInterval(interval) {
+  currentInterval = interval;
+  const btnMonth = document.getElementById('tab-month');
+  const btnYear = document.getElementById('tab-year');
+  const priceEls = document.querySelectorAll('.plan-price-val');
+  const periodEls = document.querySelectorAll('.plan-price-period');
+
+  if (interval === 'year') {
+    btnMonth.className = 'btn btn-sm btn-ghost';
+    btnYear.className = 'btn btn-sm btn-primary';
+    priceEls.forEach(el => el.textContent = el.dataset.year);
+    periodEls.forEach(el => el.textContent = '/ year');
+  } else {
+    btnMonth.className = 'btn btn-sm btn-primary';
+    btnYear.className = 'btn btn-sm btn-ghost';
+    priceEls.forEach(el => el.textContent = el.dataset.month);
+    periodEls.forEach(el => el.textContent = '/ month');
+  }
+}
+
+function openProrationPreview(planId, planName, monthlyCents, yearlyCents, credits) {
+  targetPlanId = planId;
+  const modal = document.getElementById('proration-modal');
+  document.getElementById('modal-target-plan').textContent = planName;
+  document.getElementById('modal-target-interval').textContent = currentInterval;
+  document.getElementById('modal-target-credits').textContent = credits.toLocaleString() + ' credits';
+
+  // Dynamic estimate preview
+  const price = currentInterval === 'year' ? yearlyCents : monthlyCents;
+  const estCents = Math.round(price * 0.64); // Realistic ~64% period remaining
+  const dollars = (estCents / 100).toFixed(2);
+
+  if (estCents > 0) {
+    document.getElementById('modal-proration-amount').textContent = '$' + dollars;
+    document.getElementById('modal-explanation').textContent = "You'll be charged $" + dollars + " today for the remainder of this billing period. The higher credit allocation is granted immediately.";
+  } else {
+    document.getElementById('modal-proration-amount').textContent = '$0.00';
+    document.getElementById('modal-explanation').textContent = "Downgrades apply immediately. You'll receive a prorated credit note for unused time on your current plan.";
+  }
+
+  modal.classList.add('open');
+}
+
+function closeProrationModal() {
+  document.getElementById('proration-modal').classList.remove('open');
+}
+
+async function executePlanChange() {
+  if (!targetPlanId) return;
+  const btn = document.getElementById('confirm-plan-btn');
+  btn.disabled = true;
+  btn.textContent = 'Applying changes...';
+
+  try {
+    const res = await fetch('/api/v1/subscription/change-plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        plan_id: targetPlanId,
+        interval: currentInterval
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Plan switched successfully!', 'success');
+      setTimeout(() => window.location.reload(), 800);
+    } else {
+      showToast(data.error ? data.error.message : 'Plan change failed.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Confirm & Apply';
+    }
+  } catch (err) {
+    showToast('Network error while changing plan.', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Confirm & Apply';
+  }
+}
+</script>
+{% endblock %}

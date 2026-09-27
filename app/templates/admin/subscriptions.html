@@ -1,0 +1,83 @@
+{% extends "admin/shell.html" %}
+
+{% block title %}All Subscriptions — Tallyo Ops{% endblock %}
+
+{% block admin_content %}
+<div>
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Platform Subscriptions</h1>
+      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+        Active recurring contracts, interval schedules, and renewal status across all customer workspaces.
+      </p>
+    </div>
+
+    <!-- Status Filter -->
+    <div style="display: flex; gap: 8px;">
+      <a href="/admin/subscriptions" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
+      <a href="/admin/subscriptions?status=active" class="btn btn-sm {% if status_filter == 'active' %}btn-primary{% else %}btn-secondary{% endif %}">Active</a>
+      <a href="/admin/subscriptions?status=past_due" class="btn btn-sm {% if status_filter == 'past_due' %}btn-primary{% else %}btn-secondary{% endif %}">Past Due</a>
+      <a href="/admin/subscriptions?status=canceled" class="btn btn-sm {% if status_filter == 'canceled' %}btn-primary{% else %}btn-secondary{% endif %}">Canceled</a>
+    </div>
+  </div>
+
+  <!-- Subscriptions Table -->
+  <div class="card" style="border-radius: 8px; overflow: hidden;">
+    <div style="overflow-x: auto;">
+      <table class="table" style="margin: 0;">
+        <thead>
+          <tr>
+            <th>Subscription ID</th>
+            <th>Workspace</th>
+            <th>Plan Tier</th>
+            <th>Interval</th>
+            <th>Status</th>
+            <th>Period Ends</th>
+            <th>Scheduled Cancel</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if subscriptions and subscriptions|length > 0 %}
+            {% for sub in subscriptions %}
+            <tr>
+              <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
+                {{ sub.id }}
+              </td>
+              <td>
+                <a href="/admin/workspaces/{{ sub.workspace_id }}" style="font-weight: 600; color: var(--text-main); text-decoration: none;">
+                  {{ sub.workspace_name or sub.workspace_id }}
+                </a>
+              </td>
+              <td><strong>{{ sub.plan_name or sub.plan_id }}</strong></td>
+              <td style="font-size: 13px; text-transform: capitalize;">{{ sub.interval }}</td>
+              <td>
+                <span class="status-pill status-{{ sub.status }}">
+                  {{ sub.status.capitalize() }}
+                </span>
+              </td>
+              <td style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
+                {{ sub.current_period_end[:10] }}
+              </td>
+              <td>
+                {% if sub.cancel_at_period_end %}
+                  <span class="status-pill status-past_due" style="font-size: 11px;">Yes</span>
+                {% else %}
+                  <span style="color: var(--text-light); font-size: 13px;">No</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 36px;">
+                No subscriptions matched the specified query.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

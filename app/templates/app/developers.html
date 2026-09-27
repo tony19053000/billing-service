@@ -1,0 +1,230 @@
+{% extends "app/shell.html" %}
+
+{% block title %}Developer Tools &amp; Test Clock — Tallyo{% endblock %}
+
+{% block portal_content %}
+<div style="max-width: 860px;">
+  <!-- Header -->
+  <div style="margin-bottom: 28px;">
+    <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Developer Tools &amp; Test Clock</h1>
+    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+      API credentials, live entitlement tester, and deterministic billing simulation clocks.
+    </p>
+  </div>
+
+  <!-- API Credentials Card -->
+  <div class="card" style="padding: 28px; border-radius: 8px; margin-bottom: 32px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+      <div>
+        <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 4px;">Active API Secret Token</h3>
+        <p style="font-size: 13px; color: var(--text-muted); margin: 0;">
+          Authenticate programmatic requests by passing this token in the HTTP Authorization header.
+        </p>
+      </div>
+      <span class="badge" style="background: var(--primary-tint); color: var(--primary); font-weight: 600;">Production Key</span>
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 16px;">
+      <input
+        type="password"
+        id="api-token-input"
+        class="form-input"
+        style="font-family: var(--font-mono); font-size: 13px; flex: 1; background: var(--bg-canvas);"
+        value="{{ token or 'tly_sess_sec_9948201a88b209d7' }}"
+        readonly
+      />
+      <button type="button" class="btn btn-secondary btn-sm" onclick="toggleTokenVisibility()">Reveal</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="copyApiToken()">Copy Key</button>
+    </div>
+
+    <div style="font-size: 12px; color: var(--text-light); line-height: 1.5;">
+      Header syntax: <code style="font-family: var(--font-mono); background: var(--bg-canvas); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color);">Authorization: Bearer &lt;token&gt;</code>
+    </div>
+  </div>
+
+  <!-- Feature-Check Tester Card -->
+  <div class="card" style="padding: 28px; border-radius: 8px; margin-bottom: 32px;">
+    <h3 style="font-size: 18px; font-weight: 700; margin: 0 0 4px;">Live Feature Entitlement Tester</h3>
+    <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 20px;">
+      Test the entitlement checking endpoint your core product calls before gating features.
+    </p>
+
+    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+      <select id="feature-tester-key" class="form-select" style="max-width: 240px; font-family: var(--font-mono); font-size: 13px;">
+        <option value="api_access">api_access</option>
+        <option value="webhooks">webhooks</option>
+        <option value="sso_saml">sso_saml</option>
+        <option value="audit_log">audit_log</option>
+        <option value="priority_support">priority_support</option>
+        <option value="custom_domains">custom_domains</option>
+        <option value="advanced_analytics">advanced_analytics</option>
+        <option value="data_export">data_export</option>
+      </select>
+      <button type="button" class="btn btn-secondary" onclick="runFeatureCheck()">Check Feature Gate</button>
+    </div>
+
+    <!-- Output Box -->
+    <div id="feature-tester-result" style="display: none; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: 6px; padding: 14px; font-family: var(--font-mono); font-size: 13px;">
+      <!-- Populated via JS -->
+    </div>
+  </div>
+
+  <!-- Test Clock Panel -->
+  <div class="card" id="clock" style="padding: 28px; border-radius: 8px; border: 1px solid var(--primary); box-shadow: var(--shadow-sm);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+      <div>
+        <div style="display: inline-flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+          <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Simulation Test Clock</h3>
+          <span class="status-pill status-active" style="font-size: 10px;">Deterministic</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin: 0;">
+          Fast-forward time for your workspace to test recurring billing, period rollovers, and credit grant cycles synchronously.
+        </p>
+      </div>
+    </div>
+
+    <!-- Clock Current Date Display -->
+    <div style="background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+      <div>
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; margin-bottom: 4px;">
+          Current Simulated Timestamp
+        </div>
+        <div id="clock-current-time" style="font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--primary);">
+          Loading simulation time...
+        </div>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="fetchClockStatus()">Refresh Timestamp</button>
+    </div>
+
+    <!-- Quick Action Advance Buttons -->
+    <div style="margin-bottom: 24px;">
+      <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 10px;">Quick Advance Presets</label>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="advanceClockDays(1)">+ 1 Day</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="advanceClockDays(7)">+ 7 Days (1 Week)</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="advanceClockDays(30)">+ 30 Days (1 Month)</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="advanceClockDays(365)">+ 365 Days (1 Year)</button>
+      </div>
+    </div>
+
+    <!-- Custom Days Advance Form -->
+    <div style="padding-top: 20px; border-top: 1px solid var(--border-color);">
+      <label class="form-label" for="custom-clock-days">Advance Custom Number of Days (1 &ndash; 400)</label>
+      <div style="display: flex; gap: 10px; max-width: 380px;">
+        <input type="number" id="custom-clock-days" class="form-input" min="1" max="400" value="1" />
+        <button type="button" id="advance-clock-btn" class="btn btn-primary" onclick="advanceClockDays(null)">
+          Advance Clock &rarr;
+        </button>
+      </div>
+    </div>
+
+    <!-- Simulation Results Area -->
+    <div id="clock-results-area" style="display: none; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+      <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Simulation Execution Summary:</h4>
+      <div id="clock-results-content" style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleTokenVisibility() {
+  const el = document.getElementById('api-token-input');
+  if (el.type === 'password') {
+    el.type = 'text';
+  } else {
+    el.type = 'password';
+  }
+}
+
+function copyApiToken() {
+  const el = document.getElementById('api-token-input');
+  navigator.clipboard.writeText(el.value);
+  showToast('API token copied to clipboard!', 'success');
+}
+
+async function runFeatureCheck() {
+  const key = document.getElementById('feature-tester-key').value;
+  const box = document.getElementById('feature-tester-result');
+  box.style.display = 'block';
+  box.innerHTML = 'Querying entitlement cache for feature: <strong>' + key + '</strong>...';
+
+  try {
+    const res = await fetch('/api/v1/workspace/features/' + key + '/check');
+    const data = await res.json();
+    if (data.allowed) {
+      box.innerHTML = `<span style="color:var(--success); font-weight:bold;">&check; ALLOWED</span>: Feature '${key}' is provisioned for this workspace.<br/><span style="color:var(--text-light);font-size:11px;">Response: ${JSON.stringify(data)}</span>`;
+    } else {
+      box.innerHTML = `<span style="color:var(--danger); font-weight:bold;">&cross; BLOCKED</span>: Feature '${key}' is not included in current plan.<br/><span style="color:var(--text-light);font-size:11px;">Response: ${JSON.stringify(data)}</span>`;
+    }
+  } catch (err) {
+    box.innerHTML = '<span style="color:var(--danger);">Error evaluating feature gate.</span>';
+  }
+}
+
+async function fetchClockStatus() {
+  try {
+    const res = await fetch('/api/v1/clock');
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById('clock-current-time').textContent = data.now.replace('T', ' ').substring(0, 19) + ' UTC';
+    }
+  } catch (err) {}
+}
+
+async function advanceClockDays(fixedDays) {
+  const days = fixedDays || parseInt(document.getElementById('custom-clock-days').value, 10);
+  if (!days || days < 1 || days > 400) {
+    showToast('Please specify a valid day count between 1 and 400.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('advance-clock-btn');
+  btn.disabled = true;
+  btn.textContent = 'Advancing simulation...';
+
+  try {
+    const res = await fetch('/api/v1/clock/advance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ days })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Simulated clock advanced by ' + days + ' day(s)!', 'success');
+      document.getElementById('clock-current-time').textContent = data.now.replace('T', ' ').substring(0, 19) + ' UTC';
+      
+      const resultsArea = document.getElementById('clock-results-area');
+      const resultsContent = document.getElementById('clock-results-content');
+      resultsArea.style.display = 'block';
+
+      if (data.invoices_created && data.invoices_created.length > 0) {
+        resultsContent.innerHTML = `<span style="color:var(--success);font-weight:600;">&check; Generated ${data.invoices_created.length} new billing renewal invoice(s):</span><ul style="margin:6px 0 0 20px;">` +
+          data.invoices_created.map(id => `<li>Invoice ID: <a href="/api/v1/invoices/${id}/pdf" target="_blank" style="font-family:var(--font-mono);color:var(--primary);">${id}</a></li>`).join('') +
+          `</ul>`;
+      } else {
+        resultsContent.innerHTML = `Simulation advanced successfully. No period expirations or recurring charges were triggered during this ${days}-day interval.`;
+      }
+
+      // Update header clock
+      const headerDate = document.getElementById('header-clock-date');
+      if (headerDate) {
+        const dt = new Date(data.now);
+        headerDate.textContent = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+    } else {
+      showToast('Failed to advance simulation clock.', 'error');
+    }
+  } catch (err) {
+    showToast('Network error while simulating clock advance.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Advance Clock →';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', fetchClockStatus);
+</script>
+{% endblock %}

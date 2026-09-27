@@ -1,0 +1,85 @@
+{% extends "admin/shell.html" %}
+
+{% block title %}All Platform Invoices — Tallyo Ops{% endblock %}
+
+{% block admin_content %}
+<div>
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Platform Invoices &amp; Receipts</h1>
+      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+        Complete global invoice ledger across all subscriber workspaces and billing cycles.
+      </p>
+    </div>
+
+    <!-- Status Filter -->
+    <div style="display: flex; gap: 8px;">
+      <a href="/admin/invoices" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
+      <a href="/admin/invoices?status=paid" class="btn btn-sm {% if status_filter == 'paid' %}btn-primary{% else %}btn-secondary{% endif %}">Paid</a>
+      <a href="/admin/invoices?status=open" class="btn btn-sm {% if status_filter == 'open' %}btn-primary{% else %}btn-secondary{% endif %}">Open</a>
+      <a href="/admin/invoices?status=void" class="btn btn-sm {% if status_filter == 'void' %}btn-primary{% else %}btn-secondary{% endif %}">Void</a>
+    </div>
+  </div>
+
+  <!-- Invoices Table -->
+  <div class="card" style="border-radius: 8px; overflow: hidden;">
+    <div style="overflow-x: auto;">
+      <table class="table" style="margin: 0;">
+        <thead>
+          <tr>
+            <th>Invoice Number</th>
+            <th>Workspace</th>
+            <th>Billing Period</th>
+            <th>Date Issued</th>
+            <th>Amount (USD)</th>
+            <th>Status</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if invoices and invoices|length > 0 %}
+            {% for inv in invoices %}
+            <tr>
+              <td style="font-family: var(--font-mono); font-weight: 600; color: var(--primary);">
+                {{ inv.number }}
+              </td>
+              <td>
+                <a href="/admin/workspaces/{{ inv.workspace_id }}" style="font-weight: 600; color: var(--text-main); text-decoration: none;">
+                  {{ inv.workspace_name or inv.workspace_id }}
+                </a>
+              </td>
+              <td style="font-size: 13px; color: var(--text-muted);">
+                {{ inv.period_start[:10] }} to {{ inv.period_end[:10] }}
+              </td>
+              <td style="font-size: 13px; color: var(--text-muted);">
+                {{ inv.created_at[:10] }}
+              </td>
+              <td style="font-family: var(--font-mono); font-weight: 600;">
+                ${{ "%.2f"|format(inv.total_cents / 100) }}
+              </td>
+              <td>
+                <span class="status-pill status-{{ inv.status }}">
+                  {{ inv.status.capitalize() }}
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <a href="/api/v1/invoices/{{ inv.id }}/pdf" target="_blank" class="btn btn-ghost btn-sm" style="font-size: 12px; padding: 4px 8px;">
+                  Download PDF &darr;
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 36px;">
+                No invoices found for this query filter.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

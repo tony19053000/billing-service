@@ -1,0 +1,191 @@
+{% extends "app/shell.html" %}
+
+{% block title %}Payment Methods — Tallyo{% endblock %}
+
+{% block portal_content %}
+<div>
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Payment Methods</h1>
+      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+        Manage payment methods on file for recurring subscription renewals and top-up invoices.
+      </p>
+    </div>
+    <button type="button" class="btn btn-primary" onclick="openAddCardModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <span>Add Payment Method</span>
+    </button>
+  </div>
+
+  <!-- Cards Grid -->
+  <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 40px;">
+    {% if payment_methods and payment_methods|length > 0 %}
+      {% for pm in payment_methods %}
+      <div class="card" style="padding: 20px 24px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 18px;">
+          <!-- Card Icon Badge -->
+          <div style="width: 48px; height: 32px; border-radius: 4px; background: var(--bg-canvas); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; font-family: var(--font-mono);">
+            {{ pm.brand[:4].upper() }}
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-weight: 600; font-size: 15px;">{{ pm.brand }} ending in <span style="font-family: var(--font-mono);">{{ pm.last4 }}</span></span>
+              {% if pm.is_default %}
+                <span class="badge" style="background: var(--primary-tint); color: var(--primary); font-size: 10px; font-weight: 600;">Default</span>
+              {% endif %}
+            </div>
+            <div style="font-size: 13px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">
+              Expires {{ "%02d"|format(pm.exp_month) }} / {{ pm.exp_year }}
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          {% if not pm.is_default %}
+            <button type="button" class="btn btn-secondary btn-sm" onclick="setDefaultCard('{{ pm.id }}')">
+              Set as Default
+            </button>
+          {% endif %}
+          <button type="button" class="btn btn-ghost btn-sm" style="color: var(--danger);" onclick="deleteCard('{{ pm.id }}')">
+            Remove
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="card" style="padding: 40px; text-align: center; border-radius: 8px;">
+        <p style="color: var(--text-muted); margin: 0 0 16px;">No saved payment methods on file.</p>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="openAddCardModal()">Add Payment Method</button>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Add Card Modal (Display only test card simulator as required by contract) -->
+  <div class="modal-backdrop" id="card-modal" onclick="if(event.target === this) closeAddCardModal();">
+    <div class="modal-box" style="max-width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Add Payment Method</h3>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeAddCardModal()">&times;</button>
+      </div>
+
+      <div style="background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; margin-bottom: 20px; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+        <strong>Test card configuration:</strong> Select a payment network brand and 4 digits to simulate a saved card on this workspace. Real card numbers and CVV codes are never stored.
+      </div>
+
+      <form id="add-card-form" onsubmit="handleAddCard(event)">
+        <div class="form-group">
+          <label class="form-label" for="card-brand">Card Network Brand</label>
+          <select id="card-brand" class="form-select">
+            <option value="Visa">Visa</option>
+            <option value="Mastercard">Mastercard</option>
+            <option value="American Express">American Express</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="card-last4">Test Card Last 4 Digits</label>
+          <input type="text" id="card-last4" class="form-input" style="font-family: var(--font-mono);" value="4242" maxlength="4" pattern="[0-9]{4}" required />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="card-month">Exp. Month</label>
+            <select id="card-month" class="form-select" style="font-family: var(--font-mono);">
+              {% for m in range(1, 13) %}
+                <option value="{{ m }}" {% if m == 12 %}selected{% endif %}>{{ "%02d"|format(m) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="card-year">Exp. Year</label>
+            <select id="card-year" class="form-select" style="font-family: var(--font-mono);">
+              {% for y in range(2026, 2035) %}
+                <option value="{{ y }}" {% if y == 2028 %}selected{% endif %}>{{ y }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+            <input type="checkbox" id="card-default" checked />
+            <span>Set as default payment method</span>
+          </label>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+          <button type="button" class="btn btn-secondary" onclick="closeAddCardModal()">Cancel</button>
+          <button type="submit" id="save-card-btn" class="btn btn-primary">Save Payment Method</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function openAddCardModal() {
+  document.getElementById('card-modal').classList.add('open');
+}
+
+function closeAddCardModal() {
+  document.getElementById('card-modal').classList.remove('open');
+}
+
+async function handleAddCard(e) {
+  e.preventDefault();
+  const brand = document.getElementById('card-brand').value;
+  const last4 = document.getElementById('card-last4').value.trim();
+  const exp_month = parseInt(document.getElementById('card-month').value, 10);
+  const exp_year = parseInt(document.getElementById('card-year').value, 10);
+  const is_default = document.getElementById('card-default').checked;
+
+  const btn = document.getElementById('save-card-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  try {
+    const res = await fetch('/api/v1/payment-methods', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ brand, last4, exp_month, exp_year, is_default })
+    });
+
+    if (res.ok) {
+      showToast('Payment method saved!', 'success');
+      setTimeout(() => window.location.reload(), 800);
+    } else {
+      const data = await res.json();
+      showToast(data.error ? data.error.message : 'Failed to save card.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Save Payment Method';
+    }
+  } catch (err) {
+    showToast('Network error while saving card.', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Save Payment Method';
+  }
+}
+
+async function setDefaultCard(id) {
+  try {
+    const res = await fetch('/api/v1/payment-methods/' + id + '/default', { method: 'POST' });
+    if (res.ok) {
+      showToast('Default payment method updated.', 'success');
+      setTimeout(() => window.location.reload(), 600);
+    }
+  } catch (err) {}
+}
+
+async function deleteCard(id) {
+  if (!confirm("Are you sure you want to remove this payment method?")) return;
+  try {
+    const res = await fetch('/api/v1/payment-methods/' + id, { method: 'DELETE' });
+    if (res.ok) {
+      showToast('Payment method removed.', 'success');
+      setTimeout(() => window.location.reload(), 600);
+    }
+  } catch (err) {}
+}
+</script>
+{% endblock %}

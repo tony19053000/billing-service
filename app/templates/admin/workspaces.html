@@ -1,0 +1,80 @@
+{% extends "admin/shell.html" %}
+
+{% block title %}All Customer Workspaces — Tallyo Ops{% endblock %}
+
+{% block admin_content %}
+<div>
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 style="font-size: 26px; font-weight: 700; margin: 0 0 6px;">Customer Workspaces</h1>
+      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+        Directory of all subscribed organization tenants, credit ledgers, and billing states.
+      </p>
+    </div>
+  </div>
+
+  <!-- Workspaces Card Table -->
+  <div class="card" style="border-radius: 8px; overflow: hidden;">
+    <div style="overflow-x: auto;">
+      <table class="table" style="margin: 0;">
+        <thead>
+          <tr>
+            <th>Workspace</th>
+            <th>Billing Contact</th>
+            <th>Country</th>
+            <th>Active Plan</th>
+            <th>Subscription Status</th>
+            <th>Credit Balance</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if workspaces and workspaces|length > 0 %}
+            {% for ws in workspaces %}
+            <tr>
+              <td>
+                <a href="/admin/workspaces/{{ ws.id }}" style="font-weight: 600; color: var(--text-main); text-decoration: none;">
+                  {{ ws.name }}
+                </a>
+                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-light);">{{ ws.id }}</div>
+              </td>
+              <td>
+                <div style="font-size: 13px;">{{ ws.billing_email }}</div>
+                <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-light);">slug: {{ ws.slug }}</div>
+              </td>
+              <td style="font-family: var(--font-mono); font-size: 12px;">
+                {{ ws.country }}
+              </td>
+              <td>
+                <strong>{{ ws.plan_name or "Starter" }}</strong>
+                {% if ws.interval %}<span style="font-size: 11px; color: var(--text-light);">({{ ws.interval }})</span>{% endif %}
+              </td>
+              <td>
+                <span class="status-pill status-{{ ws.subscription_status or 'active' }}">
+                  {{ (ws.subscription_status or 'active').capitalize() }}
+                </span>
+              </td>
+              <td style="font-family: var(--font-mono); font-weight: 600;">
+                {{ "{:,}".format(ws.credit_balance) }}
+              </td>
+              <td style="text-align: right;">
+                <a href="/admin/workspaces/{{ ws.id }}" class="btn btn-secondary btn-sm" style="font-size: 12px; padding: 4px 8px;">
+                  Manage &rarr;
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                No customer workspaces provisioned.
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

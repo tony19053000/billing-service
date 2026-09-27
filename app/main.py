@@ -50,9 +50,9 @@ async def custom_http_exception_handler(request: Request, exc: StarletteHTTPExce
     is_html = "text/html" in accept_header and not request.url.path.startswith("/api/")
     if is_html:
         if exc.status_code == 404:
-            return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+            return templates.TemplateResponse(request=request, name="404.html", context={"request": request}, status_code=404)
         if exc.status_code >= 500:
-            return templates.TemplateResponse("500.html", {"request": request}, status_code=500)
+            return templates.TemplateResponse(request=request, name="500.html", context={"request": request}, status_code=500)
 
     if isinstance(exc.detail, dict) and "error" in exc.detail:
         return JSONResponse(status_code=exc.status_code, content=exc.detail)
