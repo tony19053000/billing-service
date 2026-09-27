@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service — Tallyo{% endblock %}
+
+{% block body %}
+{% include "public/nav.html" %}
+
+<main style="padding: 60px 0 100px;">
+  <div class="container" style="max-width: 800px;">
+    <div style="margin-bottom: 40px;">
+      <h1 style="font-size: 38px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em;">Terms of Service</h1>
+      <p style="font-size: 14px; color: var(--text-light); font-family: var(--font-mono);">
+        Effective Date: January 1, 2026 &middot; Version 2.4
+      </p>
+    </div>
+
+    <article style="font-size: 15px; line-height: 1.7; color: var(--text-main);">
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">1. Agreement to Terms</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        These Terms of Service constitute a legally binding agreement between you and Tallyo Systems, Inc. (&ldquo;Tallyo&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;). By creating a workspace, generating API tokens, or accessing the customer billing portal, you agree to be bound by all provisions set forth herein.
+      </p>
+
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">2. Subscription Plans and Billing Intervals</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        Tallyo offers recurring subscription tiers (Starter, Pro, and Business) billed on either a monthly or annual basis. Recurring fees are charged at the beginning of each billing interval. Upgrades are billed immediately on a prorated basis for the remaining interval days, while downgrades take effect with an offsetting prorated credit.
+      </p>
+
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">3. Consumption Credits and Metered Ingestion</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        Included plan credits are allocated at the commencement of each billing period. Additional credits purchased via top-up packs are non-refundable and do not expire while your workspace remains in active standing. Ingestion calls that exceed available credit balances will receive an HTTP 402 Insufficient Credits status.
+      </p>
+
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">4. Account Termination and Cancellation</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        You may cancel your subscription at any time via the workspace settings portal. If you select cancellation at period end, your subscription remains active and entitlements continue until the conclusion of the paid interval. Immediate cancellations terminate active entitlements at once.
+      </p>
+
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">5. Limitation of Liability</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        To the maximum extent permitted by applicable law, in no event shall Tallyo Systems, Inc. be liable for any indirect, punitive, incidental, special, consequential, or exemplary damages, including damages for loss of profits, goodwill, or business interruption arising out of the use of or inability to use this platform.
+      </p>
+    </article>
+  </div>
+</main>
+
+{% include "public/footer.html" %}
+{% endblock %}

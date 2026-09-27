@@ -8,6 +8,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.config import settings
 from app.db import init_db
 from app.seed import seed_database
+from fastapi.templating import Jinja2Templates
 from app.routers import (
     auth,
     plans,
@@ -17,7 +18,10 @@ from app.routers import (
     invoices,
     clock,
     admin,
+    pages,
 )
+
+templates = Jinja2Templates(directory=str(settings.BASE_DIR / "app" / "templates"))
 
 
 @asynccontextmanager
@@ -42,6 +46,14 @@ app = FastAPI(
 
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    accept_header = request.headers.get("accept", "")
+    is_html = "text/html" in accept_header and not request.url.path.startswith("/api/")
+    if is_html:
+        if exc.status_code == 404:
+            return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+        if exc.status_code >= 500:
+            return templates.TemplateResponse("500.html", {"request": request}, status_code=500)
+
     if isinstance(exc.detail, dict) and "error" in exc.detail:
         return JSONResponse(status_code=exc.status_code, content=exc.detail)
     return JSONResponse(
@@ -67,6 +79,11 @@ def health_check():
     return {"status": "ok"}
 
 
+# Mount static assets directory
+static_dir = settings.BASE_DIR / "app" / "static"
+static_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
 # Mount API routers under /api/v1
 api_prefix = "/api/v1"
 app.include_router(auth.router, prefix=api_prefix)
@@ -78,7 +95,6 @@ app.include_router(invoices.router, prefix=api_prefix)
 app.include_router(clock.router, prefix=api_prefix)
 app.include_router(admin.router, prefix=api_prefix)
 
-# Mount static assets directory
-static_dir = settings.BASE_DIR / "app" / "static"
-static_dir.mkdir(parents=True, exist_ok=True)
-app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+# Mount public & portal page router
+app.include_router(pages.router)
+

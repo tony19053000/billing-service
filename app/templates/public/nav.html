@@ -1,0 +1,33 @@
+<header style="background:var(--bg-surface);border-bottom:1px solid var(--border-color);position:sticky;top:0;z-index:50;">
+  <div class="container" style="height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+    <div style="display:flex;align-items:center;gap:32px;">
+      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div class="brand-mark" style="width:30px;height:30px;font-size:16px;">T</div>
+        <span class="brand-text" style="font-size:18px;">Tallyo</span>
+      </a>
+      <nav style="display:flex;align-items:center;gap:20px;">
+        <a href="/pricing" style="font-size:14px;font-weight:500;color:var(--text-muted);">Pricing</a>
+        <a href="/customers" style="font-size:14px;font-weight:500;color:var(--text-muted);">Customers</a>
+        <a href="/docs" style="font-size:14px;font-weight:500;color:var(--text-muted);">Docs</a>
+        <a href="/changelog" style="font-size:14px;font-weight:500;color:var(--text-muted);">Changelog</a>
+      </nav>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle color mode" aria-label="Toggle dark mode">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+      <a href="/login" class="btn btn-ghost">Sign In</a>
+      <a href="/signup" class="btn btn-primary">Start Free</a>
+    </div>
+  </div>
+</header>

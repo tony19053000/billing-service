@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Statement — Tallyo{% endblock %}
+
+{% block body %}
+{% include "public/nav.html" %}
+
+<main style="padding: 60px 0 100px;">
+  <div class="container" style="max-width: 800px;">
+    <div style="margin-bottom: 40px;">
+      <h1 style="font-size: 38px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em;">Privacy Statement</h1>
+      <p style="font-size: 14px; color: var(--text-light); font-family: var(--font-mono);">
+        Last Updated: January 1, 2026 &middot; Version 2.1
+      </p>
+    </div>
+
+    <article style="font-size: 15px; line-height: 1.7; color: var(--text-main);">
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">1. Information We Collect</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        When you register for a Tallyo account, we collect your name, work email address, hashed authentication credentials, and workspace name. We also collect workspace billing details, such as company tax identifiers, business country, and billing contact addresses.
+      </p>
+
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">2. Telemetry and Usage Events</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        Our ingestion APIs process metric quantities (e.g. API invocation counters, export counts, and AI token counts) solely for the purpose of credit ledger deduction and invoice generation. We do not inspect, retain, or train artificial intelligence models on payload contents.
+      </p>
+
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">3. Cookies and Session State</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        Tallyo utilizes strictly necessary session cookies (<code style="font-family:var(--font-mono); font-size:13px;">tallyo_session</code>) to maintain authentication across the billing portal. We do not utilize third-party advertising trackers or behavioral targeting pixels.
+      </p>
+
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">4. Data Retention and Erasure</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        Workspace owners may request complete data deletion upon workspace cancellation. Accounting records, invoices, and charge histories are retained for statutory financial compliance periods as mandated by corporate tax regulations.
+      </p>
+
+      <h2 style="font-size: 19px; font-weight: 700; margin-top: 28px; margin-bottom: 10px;">5. Contacting the Privacy Officer</h2>
+      <p style="color: var(--text-muted); margin-bottom: 18px;">
+        For questions or requests concerning your data under GDPR or CCPA/CPRA, please contact our Data Protection Officer at <strong style="font-family:var(--font-mono); color:var(--text-main);">privacy@tallyo.io</strong>.
+      </p>
+    </article>
+  </div>
+</main>
+
+{% include "public/footer.html" %}
+{% endblock %}

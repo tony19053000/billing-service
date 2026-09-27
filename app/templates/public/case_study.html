@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Northwind Analytics Case Study — Tallyo{% endblock %}
+
+{% block body %}
+{% include "public/nav.html" %}
+
+<main style="padding: 60px 0 100px;">
+  <div class="container" style="max-width: 900px;">
+    <!-- Breadcrumb -->
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">
+      <a href="/customers" style="color: var(--text-muted); text-decoration: none;">Customers</a>
+      <span>/</span>
+      <span style="color: var(--text-main); font-weight: 500;">Northwind Analytics</span>
+    </div>
+
+    <!-- Header -->
+    <div style="margin-bottom: 48px;">
+      <div style="display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; background: var(--primary-tint); border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 16px;">
+        Customer Story &middot; Data Intelligence
+      </div>
+      <h1 style="font-size: 40px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 20px;">
+        How Northwind Analytics Automated Hybrid Metering and Eliminated 34 Hours of Monthly Invoice Reconciliation
+      </h1>
+      <div style="display: flex; align-items: center; gap: 20px; font-size: 14px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); padding-bottom: 24px;">
+        <div><strong>Company:</strong> Northwind Analytics</div>
+        <div><strong>Industry:</strong> Big Data &amp; Machine Learning</div>
+        <div><strong>Location:</strong> San Francisco, California</div>
+        <div><strong>Deployment:</strong> Business Tier</div>
+      </div>
+    </div>
+
+    <!-- Key Metrics Highlight -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 48px;">
+      <div class="card" style="padding: 24px; text-align: center; border-radius: 8px;">
+        <div style="font-size: 36px; font-weight: 700; font-family: var(--font-mono); color: var(--primary); margin-bottom: 6px;">99.4%</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Reduction in billing disputes &amp; leakage</div>
+      </div>
+      <div class="card" style="padding: 24px; text-align: center; border-radius: 8px;">
+        <div style="font-size: 36px; font-weight: 700; font-family: var(--font-mono); color: var(--success); margin-bottom: 6px;">34 hrs</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Saved every monthly accounting close</div>
+      </div>
+      <div class="card" style="padding: 24px; text-align: center; border-radius: 8px;">
+        <div style="font-size: 36px; font-weight: 700; font-family: var(--font-mono); color: var(--info); margin-bottom: 6px;">4 days</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Full production cutover time</div>
+      </div>
+    </div>
+
+    <!-- Content Sections -->
+    <article style="font-size: 16px; line-height: 1.7; color: var(--text-main);">
+      <h2 style="font-size: 24px; font-weight: 700; margin-top: 36px; margin-bottom: 16px;">The Challenge: Hybrid Subscription + Compute Token Spikes</h2>
+      <p style="margin-bottom: 20px; color: var(--text-muted);">
+        Northwind Analytics provides an enterprise business intelligence engine used by Fortune 500 retailers and financial analysts. Customers pay a base monthly subscription to grant dashboard access to analysts, but heavy compute workloads — such as query execution and AI vector lookups — vary drastically week to week.
+      </p>
+      <p style="margin-bottom: 20px; color: var(--text-muted);">
+        Prior to Tallyo, Northwind attempted to manage billing through custom Python cron jobs linked to Stripe raw invoices. This approach frequently failed under load:
+      </p>
+      <ul style="margin-bottom: 28px; padding-left: 24px; color: var(--text-muted);">
+        <li style="margin-bottom: 8px;">Cron jobs timed out during heavy month-end runs, leading to missed charges and underbilled consumption.</li>
+        <li style="margin-bottom: 8px;">Mid-cycle seat upgrades caused proration drift because custom scripts failed to account for exact billing period seconds.</li>
+        <li style="margin-bottom: 8px;">Engineering spent days every quarter maintaining custom gating logic for enterprise features like SAML SSO and audit logs.</li>
+      </ul>
+
+      <blockquote style="background: var(--bg-surface); border-left: 4px solid var(--primary); padding: 24px; border-radius: 0 8px 8px 0; margin: 32px 0; font-size: 16px; font-style: italic; color: var(--text-main);">
+        &ldquo;We are in the data business, not the billing infrastructure business. Our engineers were spending 20% of their sprints writing idempotency wrappers and prorated credit notes. Tallyo solved this completely out of the box.&rdquo;
+        <div style="margin-top: 14px; font-size: 13px; font-style: normal; font-weight: 600; color: var(--text-muted);">
+          &mdash; Maya Thorne, VP of Engineering, Northwind Analytics
+        </div>
+      </blockquote>
+
+      <h2 style="font-size: 24px; font-weight: 700; margin-top: 36px; margin-bottom: 16px;">The Implementation: High-Precision Prepaid Drawdown</h2>
+      <p style="margin-bottom: 20px; color: var(--text-muted);">
+        Northwind integrated Tallyo using our REST API in under a week. They modeled their billing architecture around three core components:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 32px;">
+        <div class="card" style="padding: 20px; border-radius: 8px;">
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 8px;">1. Instant Entitlement Verification</h3>
+          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">
+            The Northwind core web app checks customer feature gates against Tallyo's cached entitlement endpoint:
+          </p>
+          <pre style="background: var(--bg-canvas); padding: 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; overflow-x: auto; margin: 0;">GET /api/v1/workspace/features/sso_saml/check
+Response: { "allowed": true }</pre>
+        </div>
+
+        <div class="card" style="padding: 20px; border-radius: 8px;">
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 8px;">2. High-Frequency Token Metering with Idempotency</h3>
+          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">
+            Every batch query dispatches a usage event with an SHA-256 idempotency key to prevent accidental duplicate charges during network timeouts:
+          </p>
+          <pre style="background: var(--bg-canvas); padding: 12px; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; overflow-x: auto; margin: 0;">POST /api/v1/usage
+Headers: Idempotency-Key: query_job_892348_batch
+Body: { "metric": "ai_tokens", "quantity": 12500 }
+Cost: 125 credits deducted immediately from prepaid balance</pre>
+        </div>
+
+        <div class="card" style="padding: 20px; border-radius: 8px;">
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 8px;">3. Automated Self-Serve Customer Portal</h3>
+          <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+            Instead of building custom billing dashboards, Northwind directs their customers to Tallyo's white-labeled portal where users can download PDF tax invoices, review credit usage history, and add payment methods.
+          </p>
+        </div>
+      </div>
+
+      <h2 style="font-size: 24px; font-weight: 700; margin-top: 36px; margin-bottom: 16px;">The Results</h2>
+      <p style="margin-bottom: 20px; color: var(--text-muted);">
+        By migrating to Tallyo, Northwind eliminated billing reconciliation delays entirely. Today, when Northwind's finance team prepares monthly revenue recognition, Tallyo's immutable credit ledger and paid charges reconcile to the penny.
+      </p>
+      <p style="margin-bottom: 32px; color: var(--text-muted);">
+        Furthermore, self-serve plan upgrades have increased expansion revenue by 34%, as clients seamlessly upgrade from Pro to Business to unlock SAML SSO and unlimited seats without contacting sales.
+      </p>
+
+      <!-- Bottom Card -->
+      <div class="card" style="padding: 32px; border-radius: 12px; background: var(--bg-surface); text-align: center; border: 1px solid var(--primary);">
+        <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Ready to see what Tallyo can do for your software company?</h3>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+          Deploy a complete billing engine with test clocks, credit ledgers and instant portal access in minutes.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px;">
+          <a href="/signup" class="btn btn-primary">Start Free Today</a>
+          <a href="/docs" class="btn btn-secondary">Read Developer Docs</a>
+        </div>
+      </div>
+    </article>
+  </div>
+</main>
+
+{% include "public/footer.html" %}
+{% endblock %}

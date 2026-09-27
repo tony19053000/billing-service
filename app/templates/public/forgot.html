@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Reset Password — Tallyo{% endblock %}
+
+{% block body %}
+<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 16px; background: radial-gradient(circle at 50% 20%, var(--primary-tint) 0%, var(--bg-canvas) 70%);">
+  <div style="width: 100%; max-width: 420px;">
+    <!-- Logo -->
+    <div style="text-align: center; margin-bottom: 32px;">
+      <a href="/" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
+        <div class="brand-mark" style="width: 36px; height: 36px; font-size: 18px;">T</div>
+        <span class="brand-text" style="font-size: 24px;">Tallyo</span>
+      </a>
+      <h1 style="font-size: 22px; font-weight: 700; margin-top: 16px; margin-bottom: 6px;">Reset your password</h1>
+      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Enter your work email to receive recovery instructions</p>
+    </div>
+
+    <!-- Forgot Password Card -->
+    <div class="card" style="padding: 32px; border-radius: 12px; box-shadow: var(--shadow-md);">
+      <form id="forgot-form" onsubmit="handleForgot(event)">
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label class="form-label" for="forgot-email">Work Email</label>
+          <input type="email" id="forgot-email" class="form-input" placeholder="maya@northwind-analytics.com" required autocomplete="email" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; height: 42px;">
+          Send Recovery Link &rarr;
+        </button>
+      </form>
+
+      <!-- Confirmation state -->
+      <div id="forgot-success" style="display: none; text-align: center; padding: 16px 0;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: #D1FADF; color: var(--success); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Recovery Email Dispatched</h3>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+          If an account exists with that address, we have sent a secure link to reset your credentials. Please check your inbox and spam folder.
+        </p>
+        <a href="/login" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center;">Return to Sign In</a>
+      </div>
+    </div>
+
+    <!-- Back to Login -->
+    <div style="text-align: center; margin-top: 24px; font-size: 14px; color: var(--text-muted);">
+      Remembered your password? <a href="/login" style="color: var(--primary); font-weight: 500; text-decoration: none;">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function handleForgot(e) {
+  e.preventDefault();
+  document.getElementById('forgot-form').style.display = 'none';
+  document.getElementById('forgot-success').style.display = 'block';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}About Tallyo — The Autonomous SaaS Billing Platform{% endblock %}
+
+{% block body %}
+{% include "public/nav.html" %}
+
+<main style="padding: 60px 0 100px;">
+  <div class="container" style="max-width: 840px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <div style="display:inline-flex; align-items:center; gap:8px; padding:4px 12px; background:var(--primary-tint); border-radius:999px; font-size:12px; font-weight:600; color:var(--primary); margin-bottom:16px;">
+        Our Mission
+      </div>
+      <h1 style="font-size: 44px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.02em;">
+        Engineered for software teams who build to scale
+      </h1>
+      <p style="font-size: 18px; color: var(--text-muted); line-height: 1.6;">
+        Tallyo was built on a simple conviction: modern billing shouldn't require an engineering team to maintain.
+      </p>
+    </div>
+
+    <!-- Company Story -->
+    <article style="font-size: 16px; line-height: 1.7; color: var(--text-main);">
+      <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 16px;">Why We Built Tallyo</h2>
+      <p style="margin-bottom: 20px; color: var(--text-muted);">
+        Every high-growth software company encounters the same transition: starting with a simple flat-rate subscription, and quickly evolving into hybrid monetization. Customers want seat-based predictability combined with pay-as-you-go consumption for compute, API invocations, and AI tokens.
+      </p>
+      <p style="margin-bottom: 24px; color: var(--text-muted);">
+        Legacy billing gateways force engineering teams into an endless maintenance cycle: custom cron jobs, fragile reconciliation spreadsheets, asynchronous webhook races, and manual proration math. We built Tallyo to provide an autonomous, unified billing engine that handles recurring plans, credit drawdowns, and customer portals out of the box.
+      </p>
+
+      <!-- Key Pillars Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 40px 0;">
+        <div class="card" style="padding: 24px; border-radius: 8px;">
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--primary);">Deterministic Reliability</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            No background timers or unpredictable clock drifts. Everything is deterministic, reproducible, and verifiable with simulation clocks.
+          </p>
+        </div>
+        <div class="card" style="padding: 24px; border-radius: 8px;">
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--success);">Financial Precision</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Integer-based ledger accounting in USD cents. Every invoice line item, tax calculation, and credit balance reconciles to the penny.
+          </p>
+        </div>
+        <div class="card" style="padding: 24px; border-radius: 8px;">
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--info);">Sub-Millisecond Entitlements</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Cached feature permission checks built for core application request lifecycles. Zero external database overhead on your user paths.
+          </p>
+        </div>
+        <div class="card" style="padding: 24px; border-radius: 8px;">
+          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--warning);">Customer Sovereignty</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Self-serve customer portals empower your end-users to manage payments, monitor consumption, and download PDF tax receipts directly.
+          </p>
+        </div>
+      </div>
+
+      <h2 style="font-size: 24px; font-weight: 700; margin-top: 40px; margin-bottom: 16px;">Global Infrastructure</h2>
+      <p style="margin-bottom: 24px; color: var(--text-muted);">
+        Headquartered in San Francisco with distributed engineering across North America and Europe, Tallyo processes millions of billing transactions and credit metering events for modern software businesses worldwide.
+      </p>
+
+      <div class="card" style="padding: 32px; border-radius: 12px; background: var(--bg-surface); text-align: center; border: 1px solid var(--border-color); margin-top: 48px;">
+        <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Experience the next standard in SaaS billing</h3>
+        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+          Set up your workspace in 30 seconds and test complete billing cycles immediately.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px;">
+          <a href="/signup" class="btn btn-primary">Create Free Account</a>
+          <a href="/contact" class="btn btn-secondary">Get in Touch</a>
+        </div>
+      </div>
+    </article>
+  </div>
+</main>
+
+{% include "public/footer.html" %}
+{% endblock %}

@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Developer Documentation &amp; API Reference — Tallyo{% endblock %}
+
+{% block head_extra %}
+<style>
+  .docs-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 48px;
+    align-items: start;
+    padding: 40px 0 80px;
+  }
+  .docs-sidebar {
+    position: sticky;
+    top: 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+  .docs-nav-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+  .docs-nav-link {
+    display: block;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 5px 8px;
+    border-radius: 6px;
+    transition: all var(--transition-fast);
+  }
+  .docs-nav-link:hover, .docs-nav-link.active {
+    color: var(--primary);
+    background: var(--primary-tint);
+    font-weight: 500;
+  }
+  .docs-content section {
+    margin-bottom: 60px;
+    scroll-margin-top: 100px;
+  }
+  .docs-code-block {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin: 16px 0 24px;
+    overflow: hidden;
+  }
+  .docs-code-header {
+    background: var(--bg-subtle);
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .docs-code-body {
+    padding: 16px;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-x: auto;
+    color: var(--text-main);
+  }
+  @media (max-width: 860px) {
+    .docs-layout {
+      grid-template-columns: 1fr;
+    }
+    .docs-sidebar {
+      display: none;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+{% include "public/nav.html" %}
+
+<main class="container">
+  <div class="docs-layout">
+    <!-- Left Navigation -->
+    <aside class="docs-sidebar">
+      <div>
+        <div class="docs-nav-group-title">Getting Started</div>
+        <a href="#quickstart" class="docs-nav-link">Quickstart Guide</a>
+        <a href="#authentication" class="docs-nav-link">Authentication &amp; Sessions</a>
+        <a href="#errors" class="docs-nav-link">Errors &amp; Status Codes</a>
+      </div>
+      <div>
+        <div class="docs-nav-group-title">Core Concepts</div>
+        <a href="#subscriptions" class="docs-nav-link">Subscriptions &amp; Proration</a>
+        <a href="#credits" class="docs-nav-link">Usage Credits &amp; Idempotency</a>
+        <a href="#invoices" class="docs-nav-link">Invoices &amp; Receipts</a>
+        <a href="#test-clocks" class="docs-nav-link">Simulation Test Clocks</a>
+      </div>
+      <div>
+        <div class="docs-nav-group-title">API Reference</div>
+        <a href="#ref-auth" class="docs-nav-link">POST /auth/login</a>
+        <a href="#ref-usage" class="docs-nav-link">POST /usage</a>
+        <a href="#ref-entitlements" class="docs-nav-link">GET /workspace/entitlements</a>
+        <a href="#ref-clock" class="docs-nav-link">POST /clock/advance</a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="docs-content">
+      <!-- Quickstart -->
+      <section id="quickstart">
+        <h1 style="font-size: 36px; font-weight: 700; margin-bottom: 16px;">Tallyo API Quickstart</h1>
+        <p style="font-size: 16px; color: var(--text-muted); line-height: 1.6;">
+          Welcome to the Tallyo Developer Documentation. Tallyo gives your software product a turn-key billing engine: subscription management, deterministic credit drawdowns, entitlement gating, and customer invoices.
+        </p>
+
+        <h3 style="font-size: 20px; font-weight: 600; margin-top: 32px; margin-bottom: 12px;">Base URL</h3>
+        <p style="font-size: 14px; color: var(--text-muted);">All REST requests are prefixed with <code style="font-family:var(--font-mono);font-size:13px;">/api/v1</code>:</p>
+        <div class="docs-code-block">
+          <div class="docs-code-header"><span>Endpoint Root</span></div>
+          <pre class="docs-code-body">https://api.tallyo.io/api/v1 (Production)
+http://localhost:8000/api/v1 (Local Development)</pre>
+        </div>
+      </section>
+
+      <!-- Authentication -->
+      <section id="authentication">
+        <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 16px;">Authentication &amp; Sessions</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">
+          Tallyo uses opaque random bearer tokens. You authenticate API requests by providing your token in the standard HTTP <code style="font-family:var(--font-mono);font-size:13px;">Authorization</code> header.
+        </p>
+        <div class="docs-code-block">
+          <div class="docs-code-header">
+            <span>HTTP Header</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText('Authorization: Bearer sec_token_12345')">Copy</button>
+          </div>
+          <pre class="docs-code-body">Authorization: Bearer &lt;token&gt;</pre>
+        </div>
+        <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+          When interacting with the customer billing portal in a browser, sessions are also stored in a secure <code style="font-family:var(--font-mono);font-size:13px;">tallyo_session</code> cookie.
+        </p>
+      </section>
+
+      <!-- Errors -->
+      <section id="errors">
+        <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 16px;">Errors &amp; Status Codes</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">
+          Tallyo returns standard HTTP status codes along with a JSON error payload containing a machine-readable <code style="font-family:var(--font-mono);font-size:13px;">code</code> and human-readable <code style="font-family:var(--font-mono);font-size:13px;">message</code>:
+        </p>
+        <div class="docs-code-block">
+          <div class="docs-code-header"><span>JSON Error Response (e.g. 402 Payment Required)</span></div>
+          <pre class="docs-code-body">{
+  "error": {
+    "code": "insufficient_credits",
+    "message": "Workspace has insufficient credit balance (current: 12, required: 50)"
+  }
+}</pre>
+        </div>
+        <table class="table" style="margin-top: 16px;">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Error Code</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>401</code></td>
+              <td><code>unauthorized</code></td>
+              <td>Invalid or expired bearer token</td>
+            </tr>
+            <tr>
+              <td><code>402</code></td>
+              <td><code>insufficient_credits</code></td>
+              <td>Workspace balance cannot cover the requested usage event</td>
+            </tr>
+            <tr>
+              <td><code>404</code></td>
+              <td><code>not_found</code></td>
+              <td>The requested entity does not exist in your workspace</td>
+            </tr>
+            <tr>
+              <td><code>409</code></td>
+              <td><code>conflict</code></td>
+              <td>The resource already exists (e.g. email duplicate or duplicate operation)</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Subscriptions -->
+      <section id="subscriptions">
+        <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 16px;">Subscriptions &amp; Proration</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">
+          Subscriptions track recurring plan access. Tallyo supports 3 built-in plans: <strong>Starter</strong> ($0/mo), <strong>Pro</strong> ($49/mo or $490/yr), and <strong>Business</strong> ($199/mo or $1,990/yr).
+        </p>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">
+          When an upgrade occurs, Tallyo calculates the exact second-level proration of the remaining period, credits the previous plan's unused value, and issues an immediate invoice and charge for the difference. The higher credit allocation is granted immediately.
+        </p>
+        <div class="docs-code-block">
+          <div class="docs-code-header"><span>Change Plan Request</span></div>
+          <pre class="docs-code-body">curl -X POST http://localhost:8000/api/v1/subscription/change-plan \
+  -H "Authorization: Bearer $TALLYO_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "plan_id": "plan_pro",
+    "interval": "month"
+  }'</pre>
+        </div>
+      </section>
+
+      <!-- Credits and Usage -->
+      <section id="credits">
+        <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 16px;">Usage Credits &amp; Idempotency</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">
+          Credits power consumption billing. Usage events are ingested via <code style="font-family:var(--font-mono);font-size:13px;">POST /api/v1/usage</code> across three supported metrics:
+        </p>
+        <ul style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6;">
+          <li><code style="font-family:var(--font-mono);">api_calls</code>: 1 credit per invocation</li>
+          <li><code style="font-family:var(--font-mono);">exports</code>: 50 credits per data export job</li>
+          <li><code style="font-family:var(--font-mono);">ai_tokens</code>: 1 credit per 100 tokens (rounded up)</li>
+        </ul>
+        <div class="docs-code-block">
+          <div class="docs-code-header"><span>Ingest Usage with Idempotency</span></div>
+          <pre class="docs-code-body">curl -X POST http://localhost:8000/api/v1/usage \
+  -H "Authorization: Bearer $TALLYO_TOKEN" \
+  -H "Idempotency-Key: job_req_99210_token_eval" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "metric": "ai_tokens",
+    "quantity": 2500
+  }'</pre>
+        </div>
+      </section>
+
+      <!-- Invoices -->
+      <section id="invoices">
+        <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 16px;">Invoices &amp; Receipts</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">
+          Invoices are generated automatically on period renewal, plan upgrades, and credit pack top-ups. Each invoice contains an immutable identifier like <code style="font-family:var(--font-mono);">TLY-2026-00042</code>, detailed line items, and a tax breakdown.
+        </p>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">
+          You can retrieve printable HTML/PDF invoices via <code style="font-family:var(--font-mono);font-size:13px;">GET /api/v1/invoices/{id}/pdf</code>, which features a custom print stylesheet designed for executive accounting and expense auditing.
+        </p>
+      </section>
+
+      <!-- Test Clocks -->
+      <section id="test-clocks">
+        <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 16px;">Simulation Test Clocks</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6;">
+          Tallyo eliminates flaky asynchronous timers. The platform relies on a deterministic test clock that simulates the passage of time on demand. When you advance the clock, Tallyo executes billing cycle rollover, evaluates pending cancellations, and renews active periods synchronously.
+        </p>
+        <div class="docs-code-block">
+          <div class="docs-code-header"><span>Advance Clock by 30 Days</span></div>
+          <pre class="docs-code-body">curl -X POST http://localhost:8000/api/v1/clock/advance \
+  -H "Authorization: Bearer $TALLYO_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "days": 30
+  }'</pre>
+        </div>
+      </section>
+
+      <!-- API Endpoint Reference -->
+      <section id="ref-usage">
+        <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 16px;">API Reference</h2>
+        
+        <div class="card" style="padding: 24px; border-radius: 8px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <span class="badge" style="background: var(--primary); color: #FFF; font-weight: 700;">POST</span>
+            <span style="font-family: var(--font-mono); font-weight: 600;">/api/v1/usage</span>
+          </div>
+          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
+            Record a billable consumption event against the authenticated workspace's credit ledger.
+          </p>
+          <div class="docs-code-block">
+            <div class="docs-code-header"><span>HTTP Request</span></div>
+            <pre class="docs-code-body">curl -X POST http://localhost:8000/api/v1/usage \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"metric": "api_calls", "quantity": 100}'</pre>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 24px; border-radius: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <span class="badge" style="background: var(--success); color: #FFF; font-weight: 700;">GET</span>
+            <span style="font-family: var(--font-mono); font-weight: 600;">/api/v1/workspace/features/{key}/check</span>
+          </div>
+          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
+            Direct check to see if a workspace is entitled to a specific feature flag (e.g. <code style="font-family:var(--font-mono);">sso_saml</code>, <code style="font-family:var(--font-mono);">webhooks</code>).
+          </p>
+          <div class="docs-code-block">
+            <div class="docs-code-header"><span>JSON Response</span></div>
+            <pre class="docs-code-body">{
+  "allowed": true
+}</pre>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+{% include "public/footer.html" %}
+{% endblock %}

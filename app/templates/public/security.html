@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Security &amp; Compliance Policy — Tallyo{% endblock %}
+
+{% block body %}
+{% include "public/nav.html" %}
+
+<main style="padding: 60px 0 100px;">
+  <div class="container" style="max-width: 800px;">
+    <div style="margin-bottom: 40px;">
+      <div style="display:inline-flex; align-items:center; gap:8px; padding:4px 12px; background:var(--primary-tint); border-radius:999px; font-size:12px; font-weight:600; color:var(--primary); margin-bottom:16px;">
+        Trust &amp; Integrity
+      </div>
+      <h1 style="font-size: 38px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em;">Security Architecture &amp; Data Safeguards</h1>
+      <p style="font-size: 16px; color: var(--text-muted); line-height: 1.6;">
+        Tallyo is engineered to the highest standard of financial safety, data integrity, and operational resilience.
+      </p>
+    </div>
+
+    <article style="font-size: 15px; line-height: 1.7; color: var(--text-main);">
+      <h2 style="font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 12px;">Zero Raw Card Storage</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">
+        Tallyo never handles, stores, or transmits raw credit card numbers or security CVV codes. Card information is tokenized via display-only representations (brand and last four digits) to eliminate PCI scope for our customers while maintaining strict audit traceability.
+      </p>
+
+      <h2 style="font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 12px;">Authentication &amp; Password Cryptography</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">
+        All user passwords are encrypted using adaptive <code style="font-family:var(--font-mono); font-size:13px;">bcrypt</code> hashing with individual cryptographic salts. Session tokens are generated using cryptographically secure pseudorandom number generators and transmitted exclusively over TLS 1.3 with <code style="font-family:var(--font-mono); font-size:13px;">HttpOnly</code>, <code style="font-family:var(--font-mono); font-size:13px;">SameSite=Lax</code> security attributes.
+      </p>
+
+      <h2 style="font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 12px;">Workspace Isolation &amp; Tenant Partitioning</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">
+        Every API operation strictly checks tenant boundaries. Database queries mandate explicit workspace identifiers, ensuring that no member can inspect or modify subscriptions, invoices, or ledger data belonging to another workspace.
+      </p>
+
+      <h2 style="font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 12px;">Vulnerability Disclosure Program</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">
+        We welcome responsible disclosure from security researchers. If you identify a potential security vulnerability in any Tallyo service, please report it to our security team at <strong style="font-family:var(--font-mono); color:var(--text-main);">security@tallyo.io</strong>. We acknowledge reports within 24 hours and do not pursue legal action against researchers acting in good faith.
+      </p>
+    </article>
+  </div>
+</main>
+
+{% include "public/footer.html" %}
+{% endblock %}

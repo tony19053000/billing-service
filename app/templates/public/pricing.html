@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}Pricing &amp; Plans — Tallyo{% endblock %}
+
+{% block body %}
+{% include "public/nav.html" %}
+
+<main style="padding: 60px 0 100px;">
+  <div class="container">
+    <div style="text-align: center; max-width: 720px; margin: 0 auto 48px;">
+      <h1 style="font-size: 42px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.02em;">
+        Transparent pricing for modern software companies
+      </h1>
+      <p style="font-size: 18px; color: var(--text-muted); line-height: 1.6;">
+        Choose the plan that fits your growth stage. Scale seamlessly with hybrid seat licenses and high-precision usage credits.
+      </p>
+
+      <!-- Interval Toggle -->
+      <div style="display: inline-flex; align-items: center; gap: 12px; background: var(--bg-surface); padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border-color); margin-top: 28px; box-shadow: var(--shadow-sm);">
+        <button type="button" id="btn-monthly" onclick="setIntervalMode('month')" class="btn btn-sm btn-primary" style="border-radius: 999px; font-weight: 600;">Monthly Billing</button>
+        <button type="button" id="btn-yearly" onclick="setIntervalMode('year')" class="btn btn-sm btn-ghost" style="border-radius: 999px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+          <span>Annual Billing</span>
+          <span class="status-pill status-active" style="font-size: 11px; padding: 2px 8px;">2 months free</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 3 Plan Cards -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 80px;">
+      <!-- Starter -->
+      <div class="card" style="padding: 32px; display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px;">Starter</div>
+          <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px;">
+            <span class="price-display" style="font-size: 44px; font-weight: 700; font-family: var(--font-mono);">$0</span>
+            <span style="color: var(--text-muted); font-size: 14px;">/ month</span>
+          </div>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
+            Essential billing infrastructure for bootstrapped teams and early prototypes launching to production.
+          </p>
+          <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-bottom: 24px;">
+            <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); margin-bottom: 12px;">Included resources</div>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>2</strong> team seats</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>1,000</strong> credits / month</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>REST API access</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px; color: var(--text-light);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <span>Webhooks &amp; event streaming</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px; color: var(--text-light);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <span>SSO / SAML authentication</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <a href="/signup" class="btn btn-secondary" style="width: 100%; justify-content: center;">Start With Starter</a>
+      </div>
+
+      <!-- Pro (Popular) -->
+      <div class="card" style="padding: 32px; display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px; border: 2px solid var(--primary); position: relative; box-shadow: var(--shadow-md);">
+        <div style="position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #FFF; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 12px; border-radius: 999px;">
+          Most Popular
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--primary); letter-spacing: 0.05em; margin-bottom: 8px;">Pro</div>
+          <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px;">
+            <span id="price-pro" class="price-display" style="font-size: 44px; font-weight: 700; font-family: var(--font-mono); color: var(--text-main);">$49</span>
+            <span id="interval-pro" style="color: var(--text-muted); font-size: 14px;">/ month</span>
+          </div>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
+            Designed for scaling applications that demand advanced metrics, webhook dispatching, and high credit limits.
+          </p>
+          <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-bottom: 24px;">
+            <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); margin-bottom: 12px;">Included resources</div>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>10</strong> team seats</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>20,000</strong> credits / period</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Webhooks &amp; signed event streams</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Advanced ingestion analytics</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Automated CSV / JSON data export</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <a href="/signup" class="btn btn-primary" style="width: 100%; justify-content: center;">Choose Pro Tier</a>
+      </div>
+
+      <!-- Business -->
+      <div class="card" style="padding: 32px; display: flex; flex-direction: column; justify-content: space-between; border-radius: 12px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px;">Business</div>
+          <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px;">
+            <span id="price-biz" class="price-display" style="font-size: 44px; font-weight: 700; font-family: var(--font-mono);">$199</span>
+            <span id="interval-biz" style="color: var(--text-muted); font-size: 14px;">/ month</span>
+          </div>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
+            Full enterprise capabilities, custom domains, corporate single sign-on, and round-the-clock priority routing.
+          </p>
+          <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-bottom: 24px;">
+            <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-light); margin-bottom: 12px;">Included resources</div>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>Unlimited</strong> team seats</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span><strong>100,000</strong> credits / period</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Enterprise SSO &amp; SAML 2.0</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Complete immutable audit log</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>White-label custom portal domain</span>
+              </li>
+              <li style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>24/7 priority SLA support</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <a href="/signup" class="btn btn-secondary" style="width: 100%; justify-content: center;">Choose Business Tier</a>
+      </div>
+    </div>
+
+    <!-- Feature Comparison Matrix -->
+    <div style="margin-bottom: 80px;">
+      <h2 style="font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 32px;">Feature Matrix &amp; Entitlements</h2>
+      <div class="card" style="overflow-x: auto; border-radius: 12px;">
+        <table class="table" style="margin: 0;">
+          <thead>
+            <tr>
+              <th style="width: 40%;">Platform Capability</th>
+              <th style="width: 20%; text-align: center;">Starter</th>
+              <th style="width: 20%; text-align: center; color: var(--primary);">Pro</th>
+              <th style="width: 20%; text-align: center;">Business</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>REST API Access</strong><br/><span style="font-size: 12px; color: var(--text-muted);">Direct programmatic control over customers, invoices &amp; events</span></td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+            </tr>
+            <tr>
+              <td><strong>Webhooks Ingestion &amp; Dispatch</strong><br/><span style="font-size: 12px; color: var(--text-muted);">Signed HTTP webhooks with exponential retry handling</span></td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+            </tr>
+            <tr>
+              <td><strong>Advanced Analytics</strong><br/><span style="font-size: 12px; color: var(--text-muted);">Real-time burn rate histograms and seat velocity breakdowns</span></td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+            </tr>
+            <tr>
+              <td><strong>Data Export</strong><br/><span style="font-size: 12px; color: var(--text-muted);">One-click CSV / JSON full ledger dumps and invoice archives</span></td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+            </tr>
+            <tr>
+              <td><strong>SSO / SAML 2.0</strong><br/><span style="font-size: 12px; color: var(--text-muted);">Integrate with Okta, Azure AD, Ping Identity and Google Workspace</span></td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+            </tr>
+            <tr>
+              <td><strong>Audit Log</strong><br/><span style="font-size: 12px; color: var(--text-muted);">Cryptographically chained operator and team action trail</span></td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+            </tr>
+            <tr>
+              <td><strong>Custom Domains</strong><br/><span style="font-size: 12px; color: var(--text-muted);">Host your customer billing portal under your company domain</span></td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+            </tr>
+            <tr>
+              <td><strong>Priority Support</strong><br/><span style="font-size: 12px; color: var(--text-muted);">Dedicated engineering Slack channel and guaranteed 1-hour response SLA</span></td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--text-light);">&mdash;</td>
+              <td style="text-align: center; color: var(--success); font-weight: 600;">Included</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Usage Credit Explainer -->
+    <div class="card" style="padding: 40px; margin-bottom: 80px; background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-canvas) 100%); border-radius: 12px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+        <div>
+          <span class="status-pill status-active" style="margin-bottom: 12px;">Prepaid Drawdown Model</span>
+          <h2 style="font-size: 30px; font-weight: 700; margin-bottom: 16px;">How Usage Credits Work</h2>
+          <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px;">
+            Every subscription tier includes a generous recurring credit allotment replenished at each billing cycle. If your customer runs out, credits can be purchased in convenient 5,000 credit packs for just $10.00.
+          </p>
+          <div style="display: flex; gap: 24px;">
+            <div>
+              <div style="font-size: 24px; font-weight: 700; font-family: var(--font-mono); color: var(--primary);">$10.00</div>
+              <div style="font-size: 13px; color: var(--text-muted);">Per 5,000 credit pack</div>
+            </div>
+            <div>
+              <div style="font-size: 24px; font-weight: 700; font-family: var(--font-mono); color: var(--success);">Zero Expiry</div>
+              <div style="font-size: 13px; color: var(--text-muted);">Purchased credits never lapse</div>
+            </div>
+          </div>
+        </div>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 24px;">
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Standard Ingestion Rates</h3>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+              <div>
+                <div style="font-weight: 600; font-size: 14px;">API Invocations</div>
+                <div style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">metric: api_calls</div>
+              </div>
+              <span class="badge" style="font-family: var(--font-mono); font-weight: 600;">1 credit / call</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+              <div>
+                <div style="font-weight: 600; font-size: 14px;">Data Exports</div>
+                <div style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">metric: exports</div>
+              </div>
+              <span class="badge" style="font-family: var(--font-mono); font-weight: 600;">50 credits / job</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-weight: 600; font-size: 14px;">Machine Learning Tokens</div>
+                <div style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">metric: ai_tokens</div>
+              </div>
+              <span class="badge" style="font-family: var(--font-mono); font-weight: 600;">1 credit / 100 tokens</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing FAQs -->
+    <div style="max-width: 800px; margin: 0 auto;">
+      <h2 style="font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 32px;">Frequently Asked Questions</h2>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="card" style="padding: 20px 24px; border-radius: 8px;">
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">What happens when a customer upgrades mid-cycle?</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Upgrades take effect immediately. Tallyo computes exact second-level proration, crediting the unused time from the previous tier and billing only the net difference on an immediate invoice. The higher credit allocation is granted on the spot.
+          </p>
+        </div>
+        <div class="card" style="padding: 20px 24px; border-radius: 8px;">
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Can I switch between monthly and annual billing?</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Yes. Switching intervals from the customer portal calculates proration automatically. Annual billing includes two months free of charge on all paid tiers.
+          </p>
+        </div>
+        <div class="card" style="padding: 20px 24px; border-radius: 8px;">
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">How does Tallyo prevent double billing on usage requests?</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            All usage ingestion requests support an <code style="font-family:var(--font-mono); font-size:12px;">Idempotency-Key</code> header. Network retries with the identical key return the original response without executing duplicate operations.
+          </p>
+        </div>
+        <div class="card" style="padding: 20px 24px; border-radius: 8px;">
+          <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Do unused credits carry over each month?</h3>
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+            Plan-granted credits refresh at each billing cycle. Top-up credit packs purchased separately stay in your workspace balance permanently until consumed.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% include "public/footer.html" %}
+
+<script>
+function setIntervalMode(interval) {
+  const btnMonthly = document.getElementById('btn-monthly');
+  const btnYearly = document.getElementById('btn-yearly');
+  const proPrice = document.getElementById('price-pro');
+  const proInterval = document.getElementById('interval-pro');
+  const bizPrice = document.getElementById('price-biz');
+  const bizInterval = document.getElementById('interval-biz');
+
+  if (interval === 'year') {
+    btnMonthly.className = 'btn btn-sm btn-ghost';
+    btnYearly.className = 'btn btn-sm btn-primary';
+    proPrice.textContent = '$490';
+    proInterval.textContent = '/ year';
+    bizPrice.textContent = '$1,990';
+    bizInterval.textContent = '/ year';
+  } else {
+    btnMonthly.className = 'btn btn-sm btn-primary';
+    btnYearly.className = 'btn btn-sm btn-ghost';
+    proPrice.textContent = '$49';
+    proInterval.textContent = '/ month';
+    bizPrice.textContent = '$199';
+    bizInterval.textContent = '/ month';
+  }
+}
+</script>
+{% endblock %}

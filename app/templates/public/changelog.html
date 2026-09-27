@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Changelog &amp; Release History — Tallyo{% endblock %}
+
+{% block body %}
+{% include "public/nav.html" %}
+
+<main style="padding: 60px 0 100px;">
+  <div class="container" style="max-width: 800px;">
+    <div style="text-align: center; margin-bottom: 56px;">
+      <div style="display:inline-flex; align-items:center; gap:8px; padding:4px 12px; background:var(--primary-tint); border-radius:999px; font-size:12px; font-weight:600; color:var(--primary); margin-bottom:16px;">
+        Release Notes
+      </div>
+      <h1 style="font-size: 40px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em;">Product Changelog</h1>
+      <p style="font-size: 16px; color: var(--text-muted);">
+        Continuous improvements, new features, and infrastructure updates shipped to the Tallyo platform.
+      </p>
+    </div>
+
+    <!-- Timeline Entries -->
+    <div style="display: flex; flex-direction: column; gap: 40px; border-left: 2px solid var(--border-color); padding-left: 32px; position: relative;">
+      
+      <!-- Release 1 -->
+      <article style="position: relative;">
+        <div style="position: absolute; left: -39px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--primary); border: 2px solid var(--bg-surface);"></div>
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--primary); font-weight: 600; margin-bottom: 6px;">September 20, 2026</div>
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">AI Token Metering &amp; Multi-Pack Top-Ups</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Added dedicated native support for <code style="font-family:var(--font-mono); font-size:13px;">ai_tokens</code> consumption. Workspaces can now ingest raw LLM token counts and automatically bill 1 credit per 100 tokens with automated ceiling rounding.
+        </p>
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-size: 14px;">
+          <strong style="color: var(--text-main);">Highlights:</strong>
+          <ul style="margin: 8px 0 0 20px; color: var(--text-muted); line-height: 1.6;">
+            <li>Zero-latency credit balance validation on inference streaming calls.</li>
+            <li>New top-up pack checkout supporting 5,000 credit blocks at $10.00 each.</li>
+            <li>Real-time telemetry charting on the customer dashboard.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Release 2 -->
+      <article style="position: relative;">
+        <div style="position: absolute; left: -39px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-color); border: 2px solid var(--bg-surface);"></div>
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">August 14, 2026</div>
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">Instant Second-Precision Prorated Invoicing</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Upgrades and downgrades now calculate remaining billing period seconds down to the exact timestamp. When a customer upgrades from Pro to Business, unused days on Pro are refunded as a line item credit.
+        </p>
+        <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+          Immediate charges are initiated with clear audit lines detailing both the credited prior tier and the newly provisioned tier.
+        </p>
+      </article>
+
+      <!-- Release 3 -->
+      <article style="position: relative;">
+        <div style="position: absolute; left: -39px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-color); border: 2px solid var(--bg-surface);"></div>
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">July 28, 2026</div>
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">Printable Vector PDF Invoices &amp; Tax IDs</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Introduced the dedicated printable invoice route at <code style="font-family:var(--font-mono); font-size:13px;">/api/v1/invoices/{id}/pdf</code>. Includes formal company letterhead, tax identification registration numbers, breakdown of subtotal and total, and paid confirmation timestamps.
+        </p>
+      </article>
+
+      <!-- Release 4 -->
+      <article style="position: relative;">
+        <div style="position: absolute; left: -39px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-color); border: 2px solid var(--bg-surface);"></div>
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">June 15, 2026</div>
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">Deterministic Simulation Test Clocks</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Replaced asynchronous background workers with an on-demand test clock. Developers can advance workspace time by days or months synchronously, guaranteeing deterministic test suites and instant billing cycle validation.
+        </p>
+      </article>
+
+      <!-- Release 5 -->
+      <article style="position: relative;">
+        <div style="position: absolute; left: -39px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-color); border: 2px solid var(--bg-surface);"></div>
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">May 02, 2026</div>
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">Pre-Computed Workspace Entitlements Cache</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Shipped the <code style="font-family:var(--font-mono); font-size:13px;">workspace_entitlements</code> cache layer. Upstream SaaS backends can now verify feature permissions (<code style="font-family:var(--font-mono);">sso_saml</code>, <code style="font-family:var(--font-mono);">audit_log</code>, <code style="font-family:var(--font-mono);">webhooks</code>) with single-digit millisecond response times.
+        </p>
+      </article>
+
+      <!-- Release 6 -->
+      <article style="position: relative;">
+        <div style="position: absolute; left: -39px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-color); border: 2px solid var(--bg-surface);"></div>
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">April 11, 2026</div>
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">Operator Dashboard Telemetry &amp; MRR Analytics</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Platform operators now have access to comprehensive business telemetry: Monthly Recurring Revenue (MRR), Annual Run Rate (ARR), churn statistics, and plan tier distribution pie breakdowns.
+        </p>
+      </article>
+
+      <!-- Release 7 -->
+      <article style="position: relative;">
+        <div style="position: absolute; left: -39px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-color); border: 2px solid var(--bg-surface);"></div>
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">March 04, 2026</div>
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">High-Throughput Idempotency Engine</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Added the <code style="font-family:var(--font-mono); font-size:13px;">Idempotency-Key</code> header specification to ensure that network dropouts and retry cascades do not trigger duplicate ledger deductions.
+        </p>
+      </article>
+
+      <!-- Release 8 -->
+      <article style="position: relative;">
+        <div style="position: absolute; left: -39px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-color); border: 2px solid var(--bg-surface);"></div>
+        <div style="font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;">February 18, 2026</div>
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 12px;">General Availability: Tallyo Core Engine</h2>
+        <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">
+          Official launch of the Tallyo subscription and usage billing platform. Initial release features Starter, Pro, and Business tiers, credit ledger drawdowns, and self-serve customer management.
+        </p>
+      </article>
+
+    </div>
+  </div>
+</main>
+
+{% include "public/footer.html" %}
+{% endblock %}

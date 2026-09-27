@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Start Free Trial — Tallyo{% endblock %}
+
+{% block body %}
+<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 16px; background: radial-gradient(circle at 50% 20%, var(--primary-tint) 0%, var(--bg-canvas) 70%);">
+  <div style="width: 100%; max-width: 460px;">
+    <!-- Logo -->
+    <div style="text-align: center; margin-bottom: 32px;">
+      <a href="/" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
+        <div class="brand-mark" style="width: 36px; height: 36px; font-size: 18px;">T</div>
+        <span class="brand-text" style="font-size: 24px;">Tallyo</span>
+      </a>
+      <h1 style="font-size: 22px; font-weight: 700; margin-top: 16px; margin-bottom: 6px;">Create your billing workspace</h1>
+      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Instant setup with 1,000 complimentary credits</p>
+    </div>
+
+    <!-- Signup Card -->
+    <div class="card" style="padding: 32px; border-radius: 12px; box-shadow: var(--shadow-md);">
+      <div id="signup-error" style="display: none; padding: 12px; border-radius: 6px; background: #FEF3F2; border: 1px solid #FECDCA; color: var(--danger); font-size: 13px; margin-bottom: 20px;"></div>
+
+      <form id="signup-form" onsubmit="handleSignup(event)">
+        <div class="form-group">
+          <label class="form-label" for="signup-name">Full Name</label>
+          <input type="text" id="signup-name" class="form-input" placeholder="Maya Thorne" required autocomplete="name" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signup-email">Work Email</label>
+          <input type="email" id="signup-email" class="form-input" placeholder="maya@northwind-analytics.com" required autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signup-workspace">Workspace / Company Name</label>
+          <input type="text" id="signup-workspace" class="form-input" placeholder="Northwind Analytics" required />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label class="form-label" for="signup-password">Password (minimum 6 characters)</label>
+          <input type="password" id="signup-password" class="form-input" placeholder="••••••••••••" minlength="6" required autocomplete="new-password" />
+        </div>
+
+        <button type="submit" id="signup-btn" class="btn btn-primary" style="width: 100%; justify-content: center; height: 42px;">
+          Create Workspace &rarr;
+        </button>
+      </form>
+
+      <div style="margin-top: 20px; font-size: 12px; color: var(--text-light); text-align: center; line-height: 1.5;">
+        By signing up, you agree to our <a href="/terms" style="color:var(--text-muted);">Terms of Service</a> and <a href="/privacy" style="color:var(--text-muted);">Privacy Statement</a>.
+      </div>
+    </div>
+
+    <!-- Sign In Link -->
+    <div style="text-align: center; margin-top: 24px; font-size: 14px; color: var(--text-muted);">
+      Already have a workspace? <a href="/login" style="color: var(--primary); font-weight: 500; text-decoration: none;">Sign in here</a>
+    </div>
+  </div>
+</div>
+
+<script>
+async function handleSignup(e) {
+  e.preventDefault();
+  const btn = document.getElementById('signup-btn');
+  const errorBox = document.getElementById('signup-error');
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const workspace_name = document.getElementById('signup-workspace').value.trim();
+  const password = document.getElementById('signup-password').value;
+
+  btn.disabled = true;
+  btn.textContent = 'Provisioning workspace...';
+  errorBox.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/v1/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, workspace_name })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      errorBox.textContent = data.error ? data.error.message : 'Unable to create workspace.';
+      errorBox.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Create Workspace →';
+      return;
+    }
+
+    // Redirect to customer portal
+    window.location.href = '/app';
+  } catch (err) {
+    errorBox.textContent = 'Network communication error. Please try again.';
+    errorBox.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Create Workspace →';
+  }
+}
+</script>
+{% endblock %}

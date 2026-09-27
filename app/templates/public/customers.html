@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Stories — Tallyo{% endblock %}
+
+{% block body %}
+{% include "public/nav.html" %}
+
+<main style="padding: 60px 0 100px;">
+  <div class="container">
+    <div style="text-align: center; max-width: 760px; margin: 0 auto 56px;">
+      <div style="display:inline-flex; align-items:center; gap:8px; padding:4px 12px; background:var(--primary-tint); border-radius:999px; font-size:12px; font-weight:600; color:var(--primary); margin-bottom:16px;">
+        Proven at Scale
+      </div>
+      <h1 style="font-size: 42px; font-weight: 700; margin-bottom: 16px; letter-spacing: -0.02em;">
+        Powering billing for high-growth software teams
+      </h1>
+      <p style="font-size: 18px; color: var(--text-muted); line-height: 1.6;">
+        Discover how engineering and finance teams use Tallyo to automate hybrid subscription tiers, eliminate revenue leakage, and offer self-serve portals to their users.
+      </p>
+    </div>
+
+    <!-- Case Study Cards Grid -->
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; margin-bottom: 64px;">
+      <!-- Northwind Analytics Featured Card -->
+      <div class="card" style="padding: 36px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; border-left: 4px solid var(--primary);">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span class="badge" style="background: var(--primary-tint); color: var(--primary); font-weight: 600;">Data Intelligence &middot; Series B</span>
+            <span style="font-size: 13px; color: var(--text-muted);">San Francisco, CA</span>
+          </div>
+          <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">Northwind Analytics</h2>
+          <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+            Northwind needed to bill enterprise clients for scheduled SQL pipelines and millions of ad-hoc query tokens while offering instant self-serve tier upgrades.
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; padding: 16px; background: var(--bg-canvas); border-radius: 8px;">
+            <div>
+              <div style="font-size: 26px; font-weight: 700; color: var(--primary); font-family: var(--font-mono);">99.4%</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Reduction in billing leakage</div>
+            </div>
+            <div>
+              <div style="font-size: 26px; font-weight: 700; color: var(--success); font-family: var(--font-mono);">34 hrs</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Saved per monthly close</div>
+            </div>
+          </div>
+          <blockquote style="font-style: italic; font-size: 14px; color: var(--text-muted); border-left: 3px solid var(--border-color); padding-left: 14px; margin: 0 0 24px 0;">
+            &ldquo;Tallyo replaced our brittle custom billing scripts within four days. Our finance team now reconciles usage in real-time with zero discrepancy.&rdquo;
+          </blockquote>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 20px;">
+          <div style="font-size: 13px;">
+            <strong style="display:block;">Maya Thorne</strong>
+            <span style="color:var(--text-muted);">VP of Engineering</span>
+          </div>
+          <a href="/customers/northwind-analytics" class="btn btn-primary btn-sm">Read Full Story &rarr;</a>
+        </div>
+      </div>
+
+      <!-- Parcelhop Card -->
+      <div class="card" style="padding: 36px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span class="badge">Last-Mile Freight &middot; Series A</span>
+            <span style="font-size: 13px; color: var(--text-muted);">Austin, TX</span>
+          </div>
+          <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">Parcelhop</h2>
+          <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+            Parcelhop charges delivery partners on recurring monthly fleet licenses combined with real-time waypoint routing API calls metered via Tallyo credits.
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; padding: 16px; background: var(--bg-canvas); border-radius: 8px;">
+            <div>
+              <div style="font-size: 26px; font-weight: 700; color: var(--primary); font-family: var(--font-mono);">4.2M</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Monthly API calls billed</div>
+            </div>
+            <div>
+              <div style="font-size: 26px; font-weight: 700; color: var(--success); font-family: var(--font-mono);">100%</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Idempotent dispatch accuracy</div>
+            </div>
+          </div>
+          <blockquote style="font-style: italic; font-size: 14px; color: var(--text-muted); border-left: 3px solid var(--border-color); padding-left: 14px; margin: 0 0 24px 0;">
+            &ldquo;We handle spike deliveries every weekend. Tallyo's credit ledger handles thousands of simultaneous webhook events without skipping a beat.&rdquo;
+          </blockquote>
+        </div>
+        <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+          <div style="font-size: 13px;">
+            <strong style="display:block;">David Chen</strong>
+            <span style="color:var(--text-muted);">Head of Infrastructure</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Brightloom Studio Card -->
+      <div class="card" style="padding: 36px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span class="badge">Creative Collaboration &middot; Seed</span>
+            <span style="font-size: 13px; color: var(--text-muted);">New York, NY</span>
+          </div>
+          <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">Brightloom Studio</h2>
+          <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+            A shared design canvas app that bills per seat while gating high-resolution vector exports using Tallyo's pre-computed workspace entitlement cache.
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; padding: 16px; background: var(--bg-canvas); border-radius: 8px;">
+            <div>
+              <div style="font-size: 26px; font-weight: 700; color: var(--primary); font-family: var(--font-mono);">&lt; 2ms</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Entitlement check latency</div>
+            </div>
+            <div>
+              <div style="font-size: 26px; font-weight: 700; color: var(--success); font-family: var(--font-mono);">+38%</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Expansion revenue conversion</div>
+            </div>
+          </div>
+          <blockquote style="font-style: italic; font-size: 14px; color: var(--text-muted); border-left: 3px solid var(--border-color); padding-left: 14px; margin: 0 0 24px 0;">
+            &ldquo;Checking feature permissions through Tallyo's entitlement endpoint allowed us to add enterprise SSO and export gates in an afternoon.&rdquo;
+          </blockquote>
+        </div>
+        <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+          <div style="font-size: 13px;">
+            <strong style="display:block;">Elena Rostova</strong>
+            <span style="color:var(--text-muted);">Co-Founder &amp; CTO</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quillstack Card -->
+      <div class="card" style="padding: 36px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span class="badge">Developer Docs &middot; Series A</span>
+            <span style="font-size: 13px; color: var(--text-muted);">Seattle, WA</span>
+          </div>
+          <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">Quillstack</h2>
+          <p style="font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+            Quillstack powers technical documentation for thousands of open-source and commercial software products with automatic monthly invoicing and receipt dispatch.
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; padding: 16px; background: var(--bg-canvas); border-radius: 8px;">
+            <div>
+              <div style="font-size: 26px; font-weight: 700; color: var(--primary); font-family: var(--font-mono);">Zero</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Failed invoice disputes</div>
+            </div>
+            <div>
+              <div style="font-size: 26px; font-weight: 700; color: var(--success); font-family: var(--font-mono);">12,400+</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Automated invoices generated</div>
+            </div>
+          </div>
+          <blockquote style="font-style: italic; font-size: 14px; color: var(--text-muted); border-left: 3px solid var(--border-color); padding-left: 14px; margin: 0 0 24px 0;">
+            &ldquo;Our international clients love the printable PDF invoices with exact VAT calculations and clear line items. Tallyo made us look professional from day one.&rdquo;
+          </blockquote>
+        </div>
+        <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+          <div style="font-size: 13px;">
+            <strong style="display:block;">Marcus Vance</strong>
+            <span style="color:var(--text-muted);">Lead Architect</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="card" style="padding: 48px; border-radius: 12px; text-align: center; background: radial-gradient(circle at 50% 50%, var(--primary-tint) 0%, var(--bg-surface) 100%);">
+      <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 12px;">Ready to modernize your billing infrastructure?</h2>
+      <p style="font-size: 16px; color: var(--text-muted); max-width: 580px; margin: 0 auto 28px;">
+        Join fast-growing SaaS companies scaling predictable recurring revenue with Tallyo.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 14px;">
+        <a href="/signup" class="btn btn-primary btn-lg">Start Free Trial &rarr;</a>
+        <a href="/contact" class="btn btn-secondary btn-lg">Contact Enterprise Sales</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+{% include "public/footer.html" %}
+{% endblock %}

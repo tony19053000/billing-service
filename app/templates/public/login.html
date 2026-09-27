@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In — Tallyo{% endblock %}
+
+{% block body %}
+<div style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 16px; background: radial-gradient(circle at 50% 20%, var(--primary-tint) 0%, var(--bg-canvas) 70%);">
+  <div style="width: 100%; max-width: 420px;">
+    <!-- Logo -->
+    <div style="text-align: center; margin-bottom: 32px;">
+      <a href="/" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
+        <div class="brand-mark" style="width: 36px; height: 36px; font-size: 18px;">T</div>
+        <span class="brand-text" style="font-size: 24px;">Tallyo</span>
+      </a>
+      <h1 style="font-size: 22px; font-weight: 700; margin-top: 16px; margin-bottom: 6px;">Sign in to your account</h1>
+      <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Access your workspace billing portal and API keys</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="card" style="padding: 32px; border-radius: 12px; box-shadow: var(--shadow-md);">
+      <div id="login-error" style="display: none; padding: 12px; border-radius: 6px; background: #FEF3F2; border: 1px solid #FECDCA; color: var(--danger); font-size: 13px; margin-bottom: 20px;"></div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Work Email</label>
+          <input type="email" id="login-email" class="form-input" placeholder="maya@northwind-analytics.com" required autocomplete="email" />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label class="form-label" for="login-password" style="margin-bottom: 0;">Password</label>
+            <a href="/forgot" style="font-size: 12px; color: var(--primary); text-decoration: none;">Forgot password?</a>
+          </div>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password" />
+        </div>
+
+        <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%; justify-content: center; height: 42px;">
+          Sign In &rarr;
+        </button>
+      </form>
+
+      <!-- Quick Credentials Hint for Member and Operator -->
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); line-height: 1.6;">
+        <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px;">Platform Accounts:</div>
+        <div>&bull; Member: <code style="font-family:var(--font-mono); color:var(--text-main);">maya@northwind-analytics.com</code> / <code style="font-family:var(--font-mono); color:var(--text-main);">northwind-2026</code></div>
+        <div>&bull; Operator: <code style="font-family:var(--font-mono); color:var(--text-main);">ops@tallyo.io</code> / <code style="font-family:var(--font-mono); color:var(--text-main);">tallyo-admin</code></div>
+      </div>
+    </div>
+
+    <!-- Sign Up Link -->
+    <div style="text-align: center; margin-top: 24px; font-size: 14px; color: var(--text-muted);">
+      Don't have an account yet? <a href="/signup" style="color: var(--primary); font-weight: 500; text-decoration: none;">Create a workspace</a>
+    </div>
+  </div>
+</div>
+
+<script>
+async function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errorBox = document.getElementById('login-error');
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  btn.disabled = true;
+  btn.textContent = 'Authenticating...';
+  errorBox.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      errorBox.textContent = data.error ? data.error.message : 'Invalid email or password.';
+      errorBox.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In →';
+      return;
+    }
+
+    // Redirect based on role
+    if (data.user && data.user.role === 'operator') {
+      window.location.href = '/admin';
+    } else {
+      window.location.href = '/app';
+    }
+  } catch (err) {
+    errorBox.textContent = 'Network communication error. Please check your connection.';
+    errorBox.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Sign In →';
+  }
+}
+</script>
+{% endblock %}
