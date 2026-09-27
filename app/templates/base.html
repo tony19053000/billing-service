@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Tallyo — Subscription Billing & Usage Metering Platform{% endblock %}</title>
+  
+  <!-- Font Stacks -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Core Theme & Layout Stylesheets -->
+  <link rel="stylesheet" href="/static/css/tokens.css" />
+  <link rel="stylesheet" href="/static/css/base.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  {% block body %}{% endblock %}
+
+  <!-- Command Palette Modal (⌘K / Ctrl+K) -->
+  <div class="cmd-palette-backdrop" id="cmd-palette-backdrop" onclick="if(event.target === this) closeCommandPalette();">
+    <div class="cmd-palette-modal">
+      <input
+        type="text"
+        class="cmd-search-input"
+        id="cmd-search-input"
+        placeholder="Type a page name or section (e.g. Invoices, Usage, Plans, Docs)..."
+        oninput="renderPaletteItems(this.value)"
+      />
+      <div class="cmd-results" id="cmd-results">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="/static/js/main.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

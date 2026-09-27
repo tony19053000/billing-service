@@ -1,0 +1,110 @@
+:root {
+  /* Colors - Light Theme */
+  --bg-canvas: #F7F8FA;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #F2F4F7;
+  --bg-surface-raised: #FFFFFF;
+  
+  --text-main: #0B1220;
+  --text-muted: #5B6475;
+  --text-light: #98A2B3;
+  --border-color: #E4E7EC;
+  --border-subtle: #F2F4F7;
+
+  /* Primary Brand - Indigo */
+  --primary: #4F46E5;
+  --primary-hover: #4338CA;
+  --primary-tint: #EEF2FF;
+  --primary-border: #C7D2FE;
+
+  /* Status Colors */
+  --success: #12B76A;
+  --success-bg: #ECFDF3;
+  --success-text: #027A48;
+  --success-border: #A6F4C5;
+
+  --warning: #F79009;
+  --warning-bg: #FEF0C7;
+  --warning-text: #B54708;
+  --warning-border: #FEDF89;
+
+  --danger: #F04438;
+  --danger-bg: #FEF3F2;
+  --danger-text: #B42318;
+  --danger-border: #FECDCA;
+
+  --info: #0BA5EC;
+  --info-bg: #F0F9FF;
+  --info-text: #026AA2;
+  --info-border: #B9E6FE;
+
+  --gray-bg: #F2F4F7;
+  --gray-text: #344054;
+  --gray-border: #EAECF0;
+
+  /* Typography */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Layout & Geometry */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+
+  --focus-ring: 2px solid var(--primary);
+  --focus-offset: 2px;
+
+  --header-height: 56px;
+  --sidebar-width: 240px;
+}
+
+[data-theme="dark"] {
+  --bg-canvas: #0B0F19;
+  --bg-surface: #121826;
+  --bg-subtle: #182234;
+  --bg-surface-raised: #1A2234;
+
+  --text-main: #E5E7EB;
+  --text-muted: #9CA3AF;
+  --text-light: #6B7280;
+  --border-color: #1F2937;
+  --border-subtle: #16202E;
+
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-tint: #1E1B4B;
+  --primary-border: #3730A3;
+
+  --success: #12B76A;
+  --success-bg: #052E16;
+  --success-text: #4ADE80;
+  --success-border: #166534;
+
+  --warning: #F79009;
+  --warning-bg: #451A03;
+  --warning-text: #FBBF24;
+  --warning-border: #92400E;
+
+  --danger: #F04438;
+  --danger-bg: #450A0A;
+  --danger-text: #F87171;
+  --danger-border: #991B1B;
+
+  --info: #0BA5EC;
+  --info-bg: #082F49;
+  --info-text: #38BDF8;
+  --info-border: #075985;
+
+  --gray-bg: #1F2937;
+  --gray-text: #9CA3AF;
+  --gray-border: #374151;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 20px -4px rgba(0, 0, 0, 0.6);
+}

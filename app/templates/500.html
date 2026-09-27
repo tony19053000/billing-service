@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}System Error (500) — Tallyo{% endblock %}
+
+{% block body %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;">
+  <div style="text-align: center; max-width: 480px;">
+    <div style="font-family: var(--font-mono); font-size: 54px; font-weight: 700; color: var(--danger); margin-bottom: 8px;">500</div>
+    <h1 style="font-size: 24px; margin-bottom: 12px;">Internal processing fault</h1>
+    <p style="color: var(--text-muted); margin-bottom: 24px;">
+      An unexpected condition occurred while executing your request. The incident telemetry has been captured.
+    </p>
+    <div style="display: flex; justify-content: center; gap: 12px;">
+      <a href="/app" class="btn btn-primary">Return to Portal</a>
+      <a href="/status" class="btn btn-secondary">System Health</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
