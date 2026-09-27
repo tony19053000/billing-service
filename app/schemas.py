@@ -40,7 +40,7 @@ class CancelSubscriptionRequest(BaseModel):
 
 
 class TopUpCreditsRequest(BaseModel):
-    credits: int = Field(..., ge=5000)
+    credits: int
 
 
 class RecordUsageRequest(BaseModel):
